@@ -7,10 +7,10 @@ def get_warranty_sales(filename):
     book = xlrd.open_workbook(filename)
     sheet = book.sheet_by_index(0)
     nrows, ncols = sheet.nrows, sheet.ncols
-    # print("nrows: ", nrows, "ncols: ", ncols)
 
     values = []
 
+    #Collect up the Nest sales add them to the value arra and return the array.
     for row in range(1, nrows):
             # agent_id_cell = Column 16 (Column Q)
             # product_name_cell = Column 5 (Column F)
