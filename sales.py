@@ -1,6 +1,8 @@
 import openpyxl
 from get_agent_ids_and_calls import get_agent_ids_and_calls
 from get_pogo_sales import get_pogo_sales
+from get_nest_sales import get_nest_sales
+from get_warranty_sales import get_warranty_sales
 
 agentIDs = [2062004, 2062026, 2062043, 2062034, 2062053, 2062048, 2062042,
             2062011, 2062030, 2062045, 2062046, 2062016, 2062001, 2062036,
@@ -13,6 +15,11 @@ agentIDs = [2062004, 2062026, 2062043, 2062034, 2062053, 2062048, 2062042,
 supervisorIDs = {"aervin":2062007, "jnickerson":2062001, "tlevon": 2062007,
                  "jacksonn": 2062047, "jabram":2062017, "iqr_acollins":2062072,
                  "jmoore":2062023, "mayala":2062002}
+
+callsHandledReportLocation = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\Bounce_Hourly_Sales_Report_03032017.xls'
+pogoSalesReportLocation = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\bounce_energy_iqor_report_21.xls'
+productsReportLocation = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\BounceEnergyProducts\ Added2017-03-03.xls'
+fcpReportLocation = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\HourlyProducts_Added.xls'
 
 #Open the template file for editing:
 print("\nOpening template file for editing......\n")
@@ -38,7 +45,7 @@ print("\nOpening the calls handled report from iQor........\n")
     #Column AV: This is the Sales Calls Handled
 print("\nReading agent IDs and call counts.......\n")
 
-calls_handled = get_agent_ids_and_calls('C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\Bounce_Hourly_Sales_Report_03032017.xls')
+calls_handled = get_agent_ids_and_calls(callsHandledReportLocation)
 
 #Write out the call counts to the template file
 print("\nWriting call counts to the template file.......\n")
@@ -75,7 +82,7 @@ print("\nGathering up all the orders from the big bounce sales report.......\n")
 #     if(sheet[agent_id_cell].value != None):
 #         pogo_sales.append(sheet[agent_id_cell].value)
 
-pogo_sales = get_pogo_sales('C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\bounce_energy_iqor_report_21.xls')
+pogo_sales = get_pogo_sales(pogoSalesReportLocation)
 
 #For those agents that have their own non numeric POGO logins,
 #replace the POGO text usernames with the numeric AVAYA IDs
@@ -101,52 +108,22 @@ for i in range(3, 50):
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-#Open the Products report from Sonar,
-#Retrieve data and add to summary tab of template excel file
+#Retrieve NEST and DEPP data and add to summary tab of template excel file
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-#Start off with Nest Sales:
-wb = openpyxl.load_workbook('C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\products_report_030317.xlsx')
-sheets = wb.get_sheet_names()
-sheet = wb.get_sheet_by_name(sheets[0])
-
-nest_sales = []
-warranty_sales = []
 print("\nGathering NEST and warranty sales......\n")
-for i in range(1,5000):
-    agent_id_cell = "Q" + str(i)
-    product_name_cell = "F" + str(i)
-    bounce_status_cell = "K" + str(i)
-    agent_id = sheet[agent_id_cell].value
-    product_name = sheet[product_name_cell].value
-    bounce_status = sheet[bounce_status_cell].value
 
-    if(agent_id != None and
-	   product_name == "Nest TX" and
-	  (bounce_status == "Accepted" or
-	   bounce_status == "Scheduled" or
-	   bounce_status == "No deposit due" or
-	   bounce_status == "Ercot/ISO Processing" or
-	   bounce_status == "Deposit due in first bill" or
-	   bounce_status == "Deposit paid" or
-	   bounce_status == "Deposit waiver accepted")): #NEST Sales
-        nest_sales.append(agent_id)
+#Get the NEST sales - the returned calue (nest_sales) is a list of agent IDs
+#Every agent ID in the list is an agent ID that has a NEST sale
+nest_sales = get_nest_sales('C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\BounceEnergyProducts Added2017-03-03.xls')
 
-    if(agent_id != None and (product_name == "Surge Protection Plan" or
-                             product_name == "Electric Repair Essentials" or
-                             product_name == "Surge Protection Plan (20% Off)" or
-                             product_name == "Cooling Maintenance Essentials (6 Month Free Trial - Nest Bundle)" or
-                             product_name == "Cooling Repair & Maintenance Essentials" or
-                             product_name == "Electric Repair Essentials (20% Off)") or
-                             product_name == "Heating & Cooling Repair Essentials"):
-        warranty_sales.append(agent_id)
+#Get the Warranty sales - the returned calue (warranty_sales) is a list of agent IDs
+#Every agent ID in the list is an agent ID that has a Warranty sale
+warranty_sales = get_warranty_sales('C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\BounceEnergyProducts Added2017-03-03.xls')
 
-#Write out the products to the template
-
-#team leads usually submit orders with the text POGO ID rather than the numeric one
-#replace the team lead text POGO agent IDs with the numeric
-
+#Team leads usually submit NEST orders with their text POGO ID rather than the numeric one
+#Replace the team lead text POGO agent IDs with the numeric
 for id in nest_sales:
     if (type(id) == str):
         try:
@@ -154,6 +131,16 @@ for id in nest_sales:
         except:
             pass
 
+#Team leads usually submit Warranty orders with their text POGO ID rather than the numeric one
+#Replace the team lead text POGO agent IDs with the numeric
+for id in warranty_sales:
+    if (type(id) == str):
+        try:
+            nest_sales[nest_sales.index(id)] = supervisorIDs[id]
+        except:
+            pass
+
+#Write out the products to the template
 print("\nWriting the products to the template..........\n")
 for i in range(3, 50):
     agent_id_cell = "A"+str(i)

@@ -1,6 +1,6 @@
-from get_nest_sales import get_nest_sales
+from get_warranty_sales import get_warranty_sales
 
-result = get_nest_sales('C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\products_report_030317.xls')
+result = get_warranty_sales('C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\BounceEnergyProducts Added2017-03-03.xls')
 
 for item in result:
     print(item)
