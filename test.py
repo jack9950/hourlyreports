@@ -1,8 +1,6 @@
-from test_convert_xls_to_xlsx import open_xls_as_xlsx
+from get_nest_sales import get_nest_sales
 
-#print("Bounce_Hourly_Sales_Report_02252017.xls: ")
-open_xls_as_xlsx('Bounce_Hourly_Sales_Report_02252017.xls')
+result = get_nest_sales('C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\products_report_030317.xls')
 
-#print("Bounce_Hourly_Sales_Report_02272017.xls: ")
-open_xls_as_xlsx('Bounce_Hourly_Sales_Report_02272017.xls')
-
+for item in result:
+    print(item)
