@@ -24,7 +24,7 @@ fcpReportLocation = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\HourlyProducts_
 #Open the template file for editing:
 print("\nOpening template file for editing......\n")
 
-template = openpyxl.load_workbook('template.xlsx')
+template = openpyxl.load_workbook("C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\final.xlsx")
 template_sheets = template.get_sheet_names()
 template_first_sheet = template.get_sheet_by_name(template_sheets[0])
 
