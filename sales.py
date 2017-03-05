@@ -36,21 +36,18 @@ template_first_sheet = template.get_sheet_by_name(template_sheets[0])
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-#Open the calls handled report from iQor
-print("\nOpening the calls handled report from iQor........\n")
+#Get the calls handled for each agent
 
-#Gather up all the agent IDs and call counts:
-    #Column E: This is the Agent ID
-    #Column L: This is the Total Calls Handled
-    #Column AV: This is the Sales Calls Handled
 print("\nReading agent IDs and call counts.......\n")
 
+#The format returned is a 2 dimensional array with each agent and their calls represented as:
+#[agent ID, Calls Handled, Sales Calls Handled] in the return array
 calls_handled = get_agent_ids_and_calls(callsHandledReportLocation)
 
 #Write out the call counts to the template file
 print("\nWriting call counts to the template file.......\n")
-for i in range(3, 60):
-    agent_id_cell = "A"+str(i)
+for row in range(3, 60):
+    agent_id_cell = "A" + str(row)
     agent_id = template_first_sheet[agent_id_cell].value
     #retrieve each agent ID from the template and check if it is the list.
     #if found write the calls handled and sales calls handled to the template file
