@@ -55,8 +55,8 @@ for row in range(3, 60):
         for item in calls_handled: #check each nested list
             if agent_id in item and item[1] != 0: #if found and total calls > 0,
                                                   #write calls data to the template
-                template_first_sheet["C"+str(i)].value = item[1] #Total Calls Handled
-                template_first_sheet["D"+str(i)].value = item[2] #Sales Calls Handled
+                template_first_sheet["C"+str(row)].value = item[1] #Total Calls Handled
+                template_first_sheet["D"+str(row)].value = item[2] #Sales Calls Handled
 
 
 #-------------------------------------------------------------------------------
