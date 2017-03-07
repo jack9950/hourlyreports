@@ -10,7 +10,7 @@ def get_warranty_sales(filename):
 
     values = []
 
-    #Collect up the Nest sales add them to the value arra and return the array.
+    #Collect up the warranty sales add them to the value arra and return the array.
     for row in range(1, nrows):
             # agent_id_cell = Column 16 (Column Q)
             # product_name_cell = Column 5 (Column F)
