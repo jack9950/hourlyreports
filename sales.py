@@ -125,37 +125,19 @@ for item in calls_handled:
         totalCallsHandled += item[1]
         totalSalesCallsHandled += item[2]
 
-# print("jaelesia: ", jaelesiaTotalCallsHandled, jaelesiaSalesCallsHandled)
-# print("tek: ", tekTotalCallsHandled, tekSalesCallsHandled)
-# print("antwon: ", antwonTotalCallsHandled, antwonSalesCallsHandled)
-# print("totalCallsHandled: ", totalCallsHandled)
-# print("totalSalesCallsHandled", totalSalesCallsHandled)
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#Gather up all the orders from the big bounce sales report and
+#write them out to the template
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
-
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#Open the Hourly Orders Placed Report from Big Bounce,
-#retrieve date and add to summary tab of template excel file
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#Convert(to xlsx) and open the hourly orders sales report sent by Big Bounce for reading:
-#convert_file('bounce_energy_iqor_report.xls')
-# wb = openpyxl.load_workbook('bounce_energy_iqor_report_20.xlsx')
-# sheets = wb.get_sheet_names()
-# sheet = wb.get_sheet_by_name(sheets[0])
-
-#Gather up all the orders from the big bounce sales report:
 print("\nGathering up all the orders from the big bounce sales report.......\n")
-# pogo_sales = [];
-# for i in range(2,100):
-#     agent_id_cell = "G" + str(i)
-#     if(sheet[agent_id_cell].value != None):
-#         pogo_sales.append(sheet[agent_id_cell].value)
 
 pogo_sales = get_pogo_sales(pogoSalesReportLocation)
 
-#For those agents that have their own non numeric POGO logins,
-#replace the POGO text usernames with the numeric AVAYA IDs
+#Team leads usually submit POGO orders with their text POGO ID rather than the numeric one
+#Replace the team lead text POGO agent IDs with the numeric AVAYA IDs
 for id in pogo_sales:
     if (type(id) == str):
         try:
@@ -172,7 +154,6 @@ for i in range(3, 50):
     calls_handled = template_first_sheet[calls_handled_cell].value
     if(agent_id != None and calls_handled != None):
         template_first_sheet["E"+str(i)].value = pogo_sales.count(agent_id)
-        #print(agent_id, ": ", pogo_sales.count(agent_id))
 
 #Sum up the POGO sales for each supervisor and for the whole of iQor
 for agent_id in pogo_sales:
@@ -186,14 +167,10 @@ for agent_id in pogo_sales:
         antwonTotalSales += 1
         totalSales += 1
 
-# print("jaelesiaTotalSales: ", jaelesiaTotalSales)
-# print("tekTotalSales: ", tekTotalSales)
-# print("antwonTotalSales: ", antwonTotalSales)
-# print("totalSales", totalSales)
-
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-#Retrieve NEST and DEPP data and add to summary tab of template excel file
+#Gather up the NEST and DEPP sales from the Products report and
+#write them out to the template
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
@@ -208,7 +185,7 @@ nest_sales = get_nest_sales(productsReportLocation)
 warranty_sales = get_warranty_sales(productsReportLocation)
 
 #Team leads usually submit NEST orders with their text POGO ID rather than the numeric one
-#Replace the team lead text POGO agent IDs with the numeric
+#Replace the team lead text POGO agent IDs with the numeric AVAYA IDs
 for id in nest_sales:
     if (type(id) == str):
         try:
@@ -217,7 +194,7 @@ for id in nest_sales:
             pass
 
 #Team leads usually submit Warranty orders with their text POGO ID rather than the numeric one
-#Replace the team lead text POGO agent IDs with the numeric
+#Replace the team lead text POGO agent IDs with the numeric AVAYA IDs
 for id in warranty_sales:
     if (type(id) == str):
         try:
@@ -236,6 +213,7 @@ for i in range(3, 50):
         template_first_sheet["H"+str(i)].value = nest_sales.count(agent_id)
         template_first_sheet["I"+str(i)].value = warranty_sales.count(agent_id)
 
+#Sum up the NEST sales for each supervisor and for the whole of iQor
 for agent_id in nest_sales:
     if agent_id in jaelesiaTeam:
         jaelesiaNestSales += 1
@@ -247,6 +225,7 @@ for agent_id in nest_sales:
         antwonNestSales += 1
         totalNestSales += 1
 
+#Sum up the DEPP sales for each supervisor and for the whole of iQor
 for agent_id in warranty_sales:
     if agent_id in jaelesiaTeam:
         jaelesiaDEPPsales += 1
@@ -257,12 +236,14 @@ for agent_id in warranty_sales:
     if agent_id in antwonTeam:
         antwonDEPPsales += 1
         totalDEPPsales += 1
+
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-#Open the FCP report from Sonar,
-#Retrieve data and add to summary tab of template excel file
+#Gather up the FCP sales from the FCP report and
+#write them out to the template
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+
 print("\nOpening fcp report......\n")
 
 fcp_sales = get_fcp_sales(fcpReportLocation)
@@ -277,6 +258,7 @@ for i in range(3, 50):
     if(agent_id != None and calls_handled != None):
         template_first_sheet["G"+str(i)].value = fcp_sales.count(agent_id)
 
+#Sum up the fcp sales for each supervisor and for the whole of iQor
 for agent_id in fcp_sales:
     if agent_id in jaelesiaTeam:
         jaelesiaFCPsales += 1
@@ -288,14 +270,10 @@ for agent_id in fcp_sales:
         antwonFCPsales += 1
         totalFCPSales += 1
 
-# print("jaelesiaFCPsales: ", jaelesiaFCPsales)
-# print("tekFCPsales: ", tekFCPsales)
-# print("antwonFCPsales: ", antwonFCPsales)
-# print("totalFCPSales", totalFCPSales)
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-#HIVE Sales: Open the Products report from Sonar,
-#Retrieve data and add to summary tab of template excel file
+#Gather up the HIVE sales from the Products report and
+#write them out to the template
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 hive_sales = get_hive_sales(hiveReportLocation)
@@ -308,6 +286,7 @@ for i in range(3, 50):
     if(agent_id != None and calls_handled != None):
         template_first_sheet["j"+str(i)].value = fcp_sales.count(agent_id)
 
+#Sum up the HIVE sales for each supervisor and for the whole of iQor
 for agent_id in hive_sales:
     if agent_id in jaelesiaTeam:
         jaelesiaHiveSales += 1
@@ -338,6 +317,7 @@ for i in range(3,50):
         template_first_sheet["j" + str(i)].value = jaelesiaHiveSales
         closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
         template_first_sheet["f" + str(i)].value = closeRate
+
     if template_first_sheet["b" + str(i)].value == "TEK LEVON Total":
         template_first_sheet["c" + str(i)].value = tekTotalCallsHandled
         template_first_sheet["d" + str(i)].value = tekSalesCallsHandled
@@ -348,6 +328,7 @@ for i in range(3,50):
         template_first_sheet["j" + str(i)].value = tekHiveSales
         closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
         template_first_sheet["f" + str(i)].value = closeRate
+
     if template_first_sheet["b" + str(i)].value == "ANTWON COLLINS Total":
         template_first_sheet["c" + str(i)].value = antwonTotalCallsHandled
         template_first_sheet["d" + str(i)].value = antwonSalesCallsHandled
@@ -358,6 +339,7 @@ for i in range(3,50):
         template_first_sheet["j" + str(i)].value = antwonHiveSales
         closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
         template_first_sheet["f" + str(i)].value = closeRate
+
     if template_first_sheet["b" + str(i)].value == "Grand Total":
         template_first_sheet["c" + str(i)].value = totalCallsHandled
         template_first_sheet["d" + str(i)].value = totalSalesCallsHandled
@@ -368,8 +350,9 @@ for i in range(3,50):
         template_first_sheet["j" + str(i)].value = totalHiveSales
         closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
         template_first_sheet["f" + str(i)].value = closeRate
+
 #-------------------------------------------------------------------------------
-#Save the template as final.xlsx
+#We are done! - Save the template as final.xlsx
 #-------------------------------------------------------------------------------
 print("\nSaving final template.......")
 template.save("C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\final.xlsx")
