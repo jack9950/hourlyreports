@@ -1,0 +1,179 @@
+1. Format the close rate cells by color
+2. Automate the naming of the files
+2. Write script for Breakdown
+4. Write the script for the MTD report
+3. Figure out how to automate the hourly emails
+
+
+Reports need scripting:
+1. Surveys report
+2. TimeQey Reports
+
+
+Windows PowerShell
+Copyright (C) 2009 Microsoft Corporation. All rights reserved.
+
+PS C:\Users\Jackson.Ndiho> cd .\Documents\hourlyreports
+PS C:\Users\Jackson.Ndiho\Documents\hourlyreports> ls
+
+
+    Directory: C:\Users\Jackson.Ndiho\Documents\hourlyreports
+
+
+Mode                LastWriteTime     Length Name
+----                -------------     ------ ----
+d----          3/8/2017   7:35 PM            __pycache__
+-a---          3/1/2017   8:08 PM        649 get_agent_ids_and_calls.py
+-a---          3/8/2017   6:46 PM       1611 get_DEPP_sales.py
+-a---          3/6/2017   9:26 PM        769 get_fcp_sales.py
+-a---          3/8/2017   7:11 PM       1633 get_HIVE_new_service.py
+-a---          3/8/2017   7:33 PM       1763 get_HIVE_renewals.py
+-a---          3/8/2017   7:04 PM       1294 get_nest_sales.py
+-a---          3/3/2017   4:59 PM        552 get_pogo_sales.py
+-a---          3/3/2017  12:48 PM         39 README.md
+-a---          3/8/2017   9:28 PM      16895 sales.py
+-a---          3/6/2017   8:50 PM        350 teams.py
+-a---          3/8/2017   7:16 PM        723 test.py
+-a---          3/8/2017   9:26 PM        266 to do.txt
+
+
+PS C:\Users\Jackson.Ndiho\Documents\hourlyreports> python
+Python 3.5.2 (v3.5.2:4def2a2901a5, Jun 25 2016, 22:01:18) [MSC v.1900 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from openpyxl.styles import colors
+>>> from openpyxl.styles import Font, Color
+>>> from openpyxl.styles import Workbook
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: cannot import name 'Workbook'
+>>> from openpyxl import Workbook
+>>> wb = Workbook()
+>>> ws = wb.active
+>>> a1 = ws['A1']
+>>> d4 = ws['d4']
+>>> ft = Font(color=colors.RED)
+>>> a1.value = 'Cell A1'
+>>> d4.value = 'Cell d4'
+>>> a1.font = ft
+>>> d4.font = ft
+>>> wb.save('testworkbook')
+>>> wb.save('testworkbook.xlsx')
+>>> ft = Font(name='Calibri', size=25, color=colors.BLUE)
+>>> d4.font = ft
+>>> a1.font = ft
+>>> wb.save('testworkbook.xlsx')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Users\Jackson.Ndiho\AppData\Local\Programs\Python\Python35-32\lib\site-packages\openpyxl\workbook\workbook.py
+", line 263, in save
+    save_workbook(self, filename)
+  File "C:\Users\Jackson.Ndiho\AppData\Local\Programs\Python\Python35-32\lib\site-packages\openpyxl\writer\excel.py", li
+ne 239, in save_workbook
+    writer.save(filename, as_template=as_template)
+  File "C:\Users\Jackson.Ndiho\AppData\Local\Programs\Python\Python35-32\lib\site-packages\openpyxl\writer\excel.py", li
+ne 221, in save
+    archive = ZipFile(filename, 'w', ZIP_DEFLATED, allowZip64=True)
+  File "C:\Users\Jackson.Ndiho\AppData\Local\Programs\Python\Python35-32\lib\zipfile.py", line 1009, in __init__
+    self.fp = io.open(file, filemode)
+PermissionError: [Errno 13] Permission denied: 'testworkbook.xlsx'
+>>> wb.save('testworkbook1.xlsx')
+>>> for color in colors:
+...     print color
+  File "<stdin>", line 2
+    print color
+              ^
+SyntaxError: Missing parentheses in call to 'print'
+>>> for color in colors:
+...     print(color)
+...
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'module' object is not iterable
+>>> print(colors)
+<module 'openpyxl.styles.colors' from 'C:\\Users\\Jackson.Ndiho\\AppData\\Local\\Programs\\Python\\Python35-32\\lib\\sit
+e-packages\\openpyxl\\styles\\colors.py'>
+>>> for openpyxl import NamedStyle, Font, Border, Side
+  File "<stdin>", line 1
+    for openpyxl import NamedStyle, Font, Border, Side
+                      ^
+SyntaxError: invalid syntax
+>>> from openpyxl import NamedStyle, Font, Border, Side
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: cannot import name 'NamedStyle'
+>>> from openpyxl.styles import NamedStyle, Font, Border, Side
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: cannot import name 'NamedStyle'
+>>> from openpyxl.styles import Font, Border, Side
+>>> from openpyxl.styles import named_styles
+>>> myStyle = NamedStyle(name="myStyle")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'NamedStyle' is not defined
+
+*******************************************************************************
+>>> myStyle = named_styles.NamedStyle(name="myStyle")
+>>> myStyle
+NamedStyle(name='myStyle', font=Font(color=Color(indexed=Values must be of type <class 'int'>, auto=Values must be of ty
+pe <class 'bool'>, theme=Values must be of type <class 'int'>)), fill=, border=, number_format='General', alignment=, pr
+otection=)
+>>> myStyle.font = Font(size=11, bold=True)
+>>> myStyle.font = Font(size=11, bold=True)
+>>> myStyle.font = Font(size=11, bold=True)
+>>> myStyle.fill = PatternFill("solid", fgColor="DDDDDD")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'PatternFill' is not defined
+>>> myStyle.fill = Fill("solid", fgColor="DDDDDD")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'Fill' is not defined
+>>> from openpyxl.styles import Fill
+>>> from openpyxl.styles import PatternFill
+>>> myStyle.fill = PatternFill("solid", fgColor="DDDDDD")
+>>> myStyle
+NamedStyle(name='myStyle', font=Font(b=True, color=Color(indexed=Values must be of type <class 'int'>, auto=Values must
+be of type <class 'bool'>, theme=Values must be of type <class 'int'>)), fill=PatternFill(patternType='solid', fgColor=C
+olor(rgb='00DDDDDD', indexed=Values must be of type <class 'int'>, auto=Values must be of type <class 'bool'>, theme=Val
+ues must be of type <class 'int'>)), border=, number_format='General', alignment=, protection=)
+>>> a1.style = myStyle
+C:\Users\Jackson.Ndiho\AppData\Local\Programs\Python\Python35-32\lib\site-packages\openpyxl\styles\styleable.py:189: Use
+rWarning: Use formatting objects such as font directly
+  warn("Use formatting objects such as font directly")
+>>> wb.save('testworkbook2.xlsx')
+>>> a11 = ws['A11']
+>>> all.fill = PatterFill("solid", fgColor="DDDDDD")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'PatterFill' is not defined
+>>> all.fill = PatternFill("solid", fgColor="DDDDDD")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'builtin_function_or_method' object has no attribute 'fill'
+>>> a11
+<Cell Sheet.A11>
+>>> a11.__slots__
+('row', 'col_idx', '_value', 'data_type', 'parent', '_hyperlink', '_comment')
+>>> a11.encoding
+'utf-8'
+>>> a11.value
+>>> a11.value = "Cell A11"
+>>> a11.value
+'Cell A11'
+>>> a11.fill
+
+>>> a11.blah
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'Cell' object has no attribute 'blah'
+>>> all.fill = PatternFill("solid", fgColor="DDDDDD")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'builtin_function_or_method' object has no attribute 'fill'
+>>> someCell = ws['A11']
+>>> someCell.fill = PatternFill("solid", fgColor="DDDDDD")
+>>> wb.save('testworkbook3.xlsx')
+>>> someCell.fill = PatternFill("solid", fgColor="bf190d")
+>>> wb.save('testworkbook3.xlsx')
+>>>

@@ -1,5 +1,7 @@
 import openpyxl
-from openpyxl.styles import Font
+from openpyxl.styles import Style, Font, Border, Side, Fill, PatternFill
+import time
+from datetime import datetime
 from get_agent_ids_and_calls import get_agent_ids_and_calls
 from get_pogo_sales import get_pogo_sales
 #from get_nest_sales import get_nest_sales
@@ -7,6 +9,24 @@ from get_DEPP_sales import get_DEPP_sales
 from get_fcp_sales import get_fcp_sales
 from get_HIVE_new_service import get_HIVE_new_service
 from get_HIVE_renewals import get_HIVE_renewals
+
+homeFolder = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\'
+
+callsHandledReportLocation = homeFolder +'Bounce_Hourly_Sales_Report_03092017.xls'
+pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_13.xls'
+fcpReportLocation = homeFolder + 'HourlyProducts_Added.xls'
+#DEPPreportLocation = homeFolder + 'BounceEnergyProducts Added2017-03-08.xls'
+DEPPreportLocation = homeFolder + 'products_sonar_03092017.xls'
+hiveNewServiceReportLocation = homeFolder + 'products_sonar_03092017.xls'
+hiveRenewalsReportLocation = homeFolder + 'hive_renewals_03092017.xls'
+
+#Cell Background and Font Styles (to be used to conditionally format cells)
+below_goal_text = "9C0006"
+below_goal_bg = "FFC7CE"
+close_to_goal_text = "9C6500"
+close_to_goal_bg = "FFEB9C"
+at_or_above_goal_text = "006100"
+at_or_above_goal_bg = "C6EFCE"
 
 jaelesiaTeam = [2062001, 2062011, 2062020, 2062026, 2062036, 2062048, 2062053,
                 2062054, 2062057, 2062062]
@@ -62,22 +82,10 @@ supervisorIDs = {"aervin":2062007, "jnickerson":2062001, "tlevon": 2062007,
                  "jacksonn": 2062047, "jabram":2062017, "iqr_acollins":2062072,
                  "jmoore":2062023, "mayala":2062002}
 
-homeFolder = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\'
-
-callsHandledReportLocation = homeFolder +'Bounce_Hourly_Sales_Report_03082017.xls'
-pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_19.xls'
-fcpReportLocation = homeFolder + 'HourlyProducts_Added.xls'
-#DEPPreportLocation = homeFolder + 'BounceEnergyProducts Added2017-03-08.xls'
-DEPPreportLocation = homeFolder + 'products_sonar_03082017.xls'
-hiveNewServiceReportLocation = homeFolder + 'products_sonar_03082017.xls'
-hiveRenewalsReportLocation = homeFolder + 'hive_renewals_03082017.xls'
-
-finalReportName = 'SalesReport030817.xlsx'
-
 #Open the template file for editing:
 print("\nOpening template file for editing......\n")
 
-template = openpyxl.load_workbook(homeFolder + 'template.xlsx')
+template = openpyxl.load_workbook(homeFolder + 'new_template.xlsx')
 template_sheets = template.get_sheet_names()
 template_first_sheet = template.get_sheet_by_name(template_sheets[0])
 
@@ -325,6 +333,17 @@ for i in range(3,50):
     try:
         closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
         template_first_sheet["f" + str(i)].value = closeRate
+        closeRateCell = template_first_sheet["f" + str(i)]
+        # print(closeRate)
+        if closeRate < 0.4:
+            closeRateCell.font = Font(name='Calibri', size=11, bold=True, color=below_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
+        elif closeRate >= 0.5:
+            closeRateCell.font = Font(name='Calibri', size=11, bold=True, color=at_or_above_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=at_or_above_goal_bg)
+        else:
+            closeRateCell.font = Font(name='Calibri', size=11, bold=True, color=close_to_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
     except:
         pass
 
@@ -337,8 +356,24 @@ for i in range(3,50):
         #template_first_sheet["h" + str(i)].value = jaelesiaNestSales
         template_first_sheet["h" + str(i)].value = jaelesiaDEPPsales
         template_first_sheet["i" + str(i)].value = jaelesiaHiveSales
-        closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
-        template_first_sheet["f" + str(i)].value = closeRate
+        try:
+            closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
+            template_first_sheet["f" + str(i)].value = closeRate
+            closeRateCell = template_first_sheet["f" + str(i)]
+        except:
+            pass
+
+        closeRateCell = template_first_sheet["f" + str(i)]
+        # print(closeRate)
+        if closeRate < 0.4:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
+        elif closeRate >= 0.5:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=at_or_above_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=at_or_above_goal_bg)
+        else:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=close_to_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
 
     if template_first_sheet["b" + str(i)].value == "TEK LEVON Total":
         template_first_sheet["c" + str(i)].value = tekTotalCallsHandled
@@ -348,8 +383,24 @@ for i in range(3,50):
         #template_first_sheet["h" + str(i)].value = tekNestSales
         template_first_sheet["h" + str(i)].value = tekDEPPsales
         template_first_sheet["i" + str(i)].value = tekHiveSales
-        closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
-        template_first_sheet["f" + str(i)].value = closeRate
+        try:
+            closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
+            template_first_sheet["f" + str(i)].value = closeRate
+            closeRateCell = template_first_sheet["f" + str(i)]
+        except:
+            pass
+
+        closeRateCell = template_first_sheet["f" + str(i)]
+        # print(closeRate)
+        if closeRate < 0.4:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
+        elif closeRate >= 0.5:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=at_or_above_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=at_or_above_goal_bg)
+        else:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=close_to_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
 
     if template_first_sheet["b" + str(i)].value == "ANTWON COLLINS Total":
         template_first_sheet["c" + str(i)].value = antwonTotalCallsHandled
@@ -359,8 +410,24 @@ for i in range(3,50):
         #template_first_sheet["h" + str(i)].value = antwonNestSales
         template_first_sheet["h" + str(i)].value = antwonDEPPsales
         template_first_sheet["i" + str(i)].value = antwonHiveSales
-        closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
-        template_first_sheet["f" + str(i)].value = closeRate
+        try:
+            closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
+            template_first_sheet["f" + str(i)].value = closeRate
+            closeRateCell = template_first_sheet["f" + str(i)]
+        except:
+            pass
+
+        closeRateCell = template_first_sheet["f" + str(i)]
+        # print(closeRate)
+        if closeRate < 0.4:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
+        elif closeRate >= 0.5:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=at_or_above_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=at_or_above_goal_bg)
+        else:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=close_to_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
 
     if template_first_sheet["b" + str(i)].value == "Grand Total":
         template_first_sheet["c" + str(i)].value = totalCallsHandled
@@ -370,12 +437,32 @@ for i in range(3,50):
         #template_first_sheet["h" + str(i)].value = totalNestSales
         template_first_sheet["h" + str(i)].value = totalDEPPsales
         template_first_sheet["i" + str(i)].value = totalHiveSales
-        closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
-        template_first_sheet["f" + str(i)].value = closeRate
+        try:
+            closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
+            template_first_sheet["f" + str(i)].value = closeRate
+            closeRateCell = template_first_sheet["f" + str(i)]
+        except:
+            pass
+
+        closeRateCell = template_first_sheet["f" + str(i)]
+        # print(closeRate)
+        if closeRate < 0.4:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
+        elif closeRate >= 0.5:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=at_or_above_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=at_or_above_goal_bg)
+        else:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=close_to_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
 
 #-------------------------------------------------------------------------------
 #We are done! - Save the template as final.xlsx
 #-------------------------------------------------------------------------------
 print("\nSaving final template.......")
-template.save(homeFolder + finalReportName)
+finalReportName = 'SalesReport'
+currentDate = datetime.now().strftime("%m%d%Y")
+currentTime = time.strftime("%I%M%S%p")
+#print(currentDate + "_" + currentTime)
+template.save(homeFolder + finalReportName + "_" + currentDate + "_" + currentTime + ".xlsx")
 print("\nDone.......\n")
