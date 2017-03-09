@@ -2,7 +2,7 @@ import xlrd
 from openpyxl.workbook import Workbook
 from openpyxl.reader.excel import load_workbook, InvalidFileException
 
-def get_warranty_sales(filename):
+def get_DEPP_sales(filename):
 # first open using xlrd    book = xlrd.open_workbook(filename)
     book = xlrd.open_workbook(filename)
     sheet = book.sheet_by_index(0)
