@@ -2,7 +2,7 @@ import xlrd
 from openpyxl.workbook import Workbook
 from openpyxl.reader.excel import load_workbook, InvalidFileException
 
-def get_agent_ids_and_calls(filename):
+def get_calls_handled(filename):
 # first open using xlrd    book = xlrd.open_workbook(filename)
     book = xlrd.open_workbook(filename)
     sheet = book.sheet_by_index(1)

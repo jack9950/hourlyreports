@@ -2,7 +2,7 @@ import openpyxl
 from openpyxl.styles import Style, Font, Border, Side, Fill, PatternFill
 import time
 from datetime import datetime
-from get_agent_ids_and_calls import get_agent_ids_and_calls
+from get_calls_handled import get_calls_handled
 from get_pogo_sales import get_pogo_sales
 #from get_nest_sales import get_nest_sales
 from get_DEPP_sales import get_DEPP_sales
@@ -13,7 +13,7 @@ from get_HIVE_renewals import get_HIVE_renewals
 homeFolder = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\'
 
 callsHandledReportLocation = homeFolder +'Bounce_Hourly_Sales_Report_03092017.xls'
-pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_13.xls'
+pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_18.xls'
 fcpReportLocation = homeFolder + 'HourlyProducts_Added.xls'
 #DEPPreportLocation = homeFolder + 'BounceEnergyProducts Added2017-03-08.xls'
 DEPPreportLocation = homeFolder + 'products_sonar_03092017.xls'
@@ -103,7 +103,7 @@ print("\nReading agent IDs and call counts.......\n")
 
 #The format returned is a 2 dimensional array with each agent and their calls represented as:
 #[agent ID, Calls Handled, Sales Calls Handled] in the return array
-calls_handled = get_agent_ids_and_calls(callsHandledReportLocation)
+calls_handled = get_calls_handled(callsHandledReportLocation)
 
 #Write out the call counts to the template file
 print("\nWriting call counts to the template file.......\n")
