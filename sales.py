@@ -12,13 +12,12 @@ from get_HIVE_renewals import get_HIVE_renewals
 
 homeFolder = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\'
 
-callsHandledReportLocation = homeFolder +'Bounce_Hourly_Sales_Report_03092017.xls'
-pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_18.xls'
+callsHandledReportLocation = homeFolder +'Bounce_Hourly_Sales_Report_03102017.xls'
+pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_11.xls'
 fcpReportLocation = homeFolder + 'HourlyProducts_Added.xls'
-#DEPPreportLocation = homeFolder + 'BounceEnergyProducts Added2017-03-08.xls'
-DEPPreportLocation = homeFolder + 'products_sonar_03092017.xls'
-hiveNewServiceReportLocation = homeFolder + 'products_sonar_03092017.xls'
-hiveRenewalsReportLocation = homeFolder + 'hive_renewals_03092017.xls'
+DEPPreportLocation = homeFolder + 'products_sonar_03102017.xls'
+hiveNewServiceReportLocation = homeFolder + 'products_sonar_03102017.xls'
+hiveRenewalsReportLocation = homeFolder + 'hive_renewals_03102017.xls'
 
 #Cell Background and Font Styles (to be used to conditionally format cells)
 below_goal_text = "9C0006"
@@ -85,7 +84,7 @@ supervisorIDs = {"aervin":2062007, "jnickerson":2062001, "tlevon": 2062007,
 #Open the template file for editing:
 print("\nOpening template file for editing......\n")
 
-template = openpyxl.load_workbook(homeFolder + 'new_template.xlsx')
+template = openpyxl.load_workbook(homeFolder + 'template_sales.xlsx')
 template_sheets = template.get_sheet_names()
 template_first_sheet = template.get_sheet_by_name(template_sheets[0])
 

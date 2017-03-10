@@ -15,16 +15,18 @@ firstRow = 4 #first row to start adding agent sales is row 4
 left_alignment = Alignment(horizontal='left')
 
 homeFolder = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\'
-pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_18.xls'
-DEPPreportLocation = homeFolder + 'products_sonar_03092017.xls'
-hiveNewServiceReportLocation = homeFolder + 'products_sonar_03092017.xls'
-hiveRenewalsReportLocation = homeFolder + 'hive_renewals_03092017.xls'
+
+callsHandledReportLocation = homeFolder +'Bounce_Hourly_Sales_Report_03102017.xls'
+pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_11.xls'
 fcpReportLocation = homeFolder + 'HourlyProducts_Added.xls'
+DEPPreportLocation = homeFolder + 'products_sonar_03102017.xls'
+hiveNewServiceReportLocation = homeFolder + 'products_sonar_03102017.xls'
+hiveRenewalsReportLocation = homeFolder + 'hive_renewals_03102017.xls'
 
 currentDate = datetime.now().strftime("%A %m-%d-%Y")
 
 #Open the template
-template = openpyxl.load_workbook(homeFolder + 'breakdown_test_template.xlsx')
+template = openpyxl.load_workbook(homeFolder + 'template_breakdown.xlsx')
 template_sheets = template.get_sheet_names()
 template_first_sheet = template.get_sheet_by_name(template_sheets[0])
 template_second_sheet = template.get_sheet_by_name(template_sheets[1])
@@ -159,7 +161,7 @@ for fcp_opportunity in fcp_opportunities:
     template_third_sheet["F" + str(row)].alignment = left_alignment
     row += 1
 
-finalReportName = 'breakdown_test'
+finalReportName = 'BreakdownReport'
 currentDate = datetime.now().strftime("%m%d%Y")
 currentTime = time.strftime("%I%M%S%p")
 template.save(homeFolder + finalReportName + "_" + currentDate + "_" + currentTime + ".xlsx")
