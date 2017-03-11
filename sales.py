@@ -9,15 +9,8 @@ from get_DEPP_sales import get_DEPP_sales
 from get_fcp_sales import get_fcp_sales
 from get_HIVE_new_service import get_HIVE_new_service
 from get_HIVE_renewals import get_HIVE_renewals
-
-homeFolder = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\'
-
-callsHandledReportLocation = homeFolder +'Bounce_Hourly_Sales_Report_03102017.xls'
-pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_11.xls'
-fcpReportLocation = homeFolder + 'HourlyProducts_Added.xls'
-DEPPreportLocation = homeFolder + 'products_sonar_03102017.xls'
-hiveNewServiceReportLocation = homeFolder + 'products_sonar_03102017.xls'
-hiveRenewalsReportLocation = homeFolder + 'hive_renewals_03102017.xls'
+from data_files import homeFolder, callsHandledReportLocation, pogoSalesReportLocation
+from data_files import fcpReportLocation, DEPPreportLocation, hiveNewServiceReportLocation, hiveRenewalsReportLocation
 
 #Cell Background and Font Styles (to be used to conditionally format cells)
 below_goal_text = "9C0006"

@@ -1,9 +1,13 @@
 import xlrd
 from openpyxl.workbook import Workbook
 from openpyxl.reader.excel import load_workbook, InvalidFileException
+import time
+from data_files import homeFolder, callsHandledReportLocation, pogoSalesReportLocation
 
 def get_pogo_sales(filename):
 # first open using xlrd    book = xlrd.open_workbook(filename)
+    currentHour = time.strftime('%H')
+    filename = homeFolder + 'bounce_energy_iqor_report_' + currentHour  + '.xls'
     book = xlrd.open_workbook(filename)
     sheet = book.sheet_by_index(0)
     nrows, ncols = sheet.nrows, sheet.ncols

@@ -10,18 +10,11 @@ from get_fcp_sales_breakdown import get_fcp_sales_breakdown
 from teams import agent_ids_to_names
 import time
 from datetime import datetime
+from data_files import homeFolder, callsHandledReportLocation, pogoSalesReportLocation
+from data_files import fcpReportLocation, DEPPreportLocation, hiveNewServiceReportLocation, hiveRenewalsReportLocation
 
 firstRow = 4 #first row to start adding agent sales is row 4
 left_alignment = Alignment(horizontal='left')
-
-homeFolder = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\'
-
-callsHandledReportLocation = homeFolder +'Bounce_Hourly_Sales_Report_03102017.xls'
-pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_11.xls'
-fcpReportLocation = homeFolder + 'HourlyProducts_Added.xls'
-DEPPreportLocation = homeFolder + 'products_sonar_03102017.xls'
-hiveNewServiceReportLocation = homeFolder + 'products_sonar_03102017.xls'
-hiveRenewalsReportLocation = homeFolder + 'hive_renewals_03102017.xls'
 
 currentDate = datetime.now().strftime("%A %m-%d-%Y")
 
@@ -164,4 +157,6 @@ for fcp_opportunity in fcp_opportunities:
 finalReportName = 'BreakdownReport'
 currentDate = datetime.now().strftime("%m%d%Y")
 currentTime = time.strftime("%I%M%S%p")
+print("Saving report... \n")
 template.save(homeFolder + finalReportName + "_" + currentDate + "_" + currentTime + ".xlsx")
+print("Done...")
