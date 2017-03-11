@@ -34,7 +34,7 @@ template_first_sheet["A2"] = currentDate #show the date at the top of the sheet
 #The list format that will be returned by get_pogo_sales_breakdown is:
 #  [ [agent_name, [Acct #, Order #, order status], [Acct #, Order #, order status] ],
 #    [agent_name, [Acct #, Order #, order status], [Acct #, Order #, order status] ] ]
-bounce_sales = get_pogo_sales_breakdown(pogoSalesReportLocation)
+bounce_sales = get_pogo_sales_breakdown(pogoSalesReportLocation())
 bounce_sales.sort() #Sort alphabetically by agent name
 
 row = firstRow #first row to start adding agent sales is row 4
@@ -55,7 +55,7 @@ for bounce_sale in bounce_sales:
 
 template_first_sheet["F2"] = currentDate #show the date at the top of the sheet
 
-DEPP_sales = get_DEPP_sales_breakdown(DEPPreportLocation)
+DEPP_sales = get_DEPP_sales_breakdown(DEPPreportLocation())
 DEPP_sales.sort()
 
 row = firstRow #first row to start adding agent sales is row 4
@@ -78,7 +78,7 @@ for DEPP_sale in DEPP_sales:
 
 template_second_sheet["A2"] = currentDate #show the date at the top of the sheet
 
-HIVE_new_service_sales = get_HIVE_new_service_breakdown(hiveNewServiceReportLocation)
+HIVE_new_service_sales = get_HIVE_new_service_breakdown(hiveNewServiceReportLocation())
 HIVE_new_service_sales.sort()
 
 row = firstRow #first row to start adding agent sales is row 4
@@ -101,7 +101,7 @@ for HIVE_new_service_sale in HIVE_new_service_sales:
 
 template_second_sheet["G2"] = currentDate #show the date at the top of the sheet
 
-HIVE_renewal_sales = get_HIVE_renewals_breakdown(hiveRenewalsReportLocation)
+HIVE_renewal_sales = get_HIVE_renewals_breakdown(hiveRenewalsReportLocation())
 HIVE_renewal_sales.sort()
 
 row = firstRow #first row to start adding agent sales is row 4
@@ -124,7 +124,7 @@ for HIVE_renewal_sale in HIVE_renewal_sales:
 
 template_third_sheet["A2"] = currentDate #show the date at the top of the sheet
 
-fcp_sales = get_fcp_sales_breakdown(fcpReportLocation)
+fcp_sales = get_fcp_sales_breakdown(fcpReportLocation())
 fcp_sales.sort()
 
 row = firstRow #first row to start adding agent sales is row 4
@@ -141,7 +141,7 @@ for fcp_sale in fcp_sales:
 
 template_third_sheet["D2"] = currentDate #show the date at the top of the sheet
 
-fcp_opportunities = get_fcp_opportunities_breakdown(pogoSalesReportLocation)
+fcp_opportunities = get_fcp_opportunities_breakdown(pogoSalesReportLocation())
 fcp_opportunities.sort()
 
 row = firstRow #first row to start adding agent sales is row 4
