@@ -1,10 +1,17 @@
+import sys
 import xlrd
 from openpyxl.workbook import Workbook
 from openpyxl.reader.excel import load_workbook, InvalidFileException
 
 def get_calls_handled(filename):
 # first open using xlrd    book = xlrd.open_workbook(filename)
-    book = xlrd.open_workbook(filename)
+    try:
+        book = xlrd.open_workbook(filename)
+    except FileNotFoundError:
+        print("File: ", filename)
+        print("\nFile not found...Exiting...")
+        sys.exit()
+
     sheet = book.sheet_by_index(1)
     nrows, ncols = sheet.nrows, sheet.ncols
 

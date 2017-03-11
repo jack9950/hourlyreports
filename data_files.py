@@ -3,7 +3,6 @@ from datetime import datetime
 
 homeFolder = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\'
 
-
 #callsHandledReportLocation = homeFolder +'Bounce_Hourly_Sales_Report_03102017.xls'
 #pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_18.xls'
 # fcpReportLocation = homeFolder + 'HourlyProducts_Added.xls'
@@ -11,8 +10,7 @@ homeFolder = 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\'
 # hiveNewServiceReportLocation = homeFolder + 'products_sonar_03102017.xls'
 # hiveRenewalsReportLocation = homeFolder + 'hive_renewals_03102017.xls'
 
-def pogoSalesReportLocation(*args):
-    print('args: ', args == True)
+def pogoSalesReportLocation():
 
     hour = time.localtime().tm_hour
     if (hour < 8 or hour > 21):
@@ -24,9 +22,9 @@ def pogoSalesReportLocation(*args):
     return pogoSalesReportLocation
 
 def callsHandledReportLocation(*args):
-    if args[0]: #if a date is passed, use that to construct the file names (this assumes there is a folder with the date)
+    if args[0]: #if a date is passed, use that to construct the file names
         currentDate = args[0]
-        print('currentDate: ', currentDate)
+        # print('currentDate: ', currentDate)
     else:
         currentDate = datetime.now().strftime("%A %m-%d-%Y")
 
@@ -38,14 +36,14 @@ def fcpReportLocation():
     fcpReportLocation = homeFolder + 'HourlyProducts_Added.xls'
     return fcpReportLocation
 
-def DEPPreportLocation():
+def DEPPreportLocation(*args): #if a date is passed, use that to construct the file names
     DEPPreportLocation = homeFolder + 'products_sonar_03102017.xls'
     return DEPPreportLocation
 
-def hiveNewServiceReportLocation():
+def hiveNewServiceReportLocation(*args): #if a date is passed, use that to construct the file names
     hiveNewServiceReportLocation = homeFolder + 'products_sonar_03102017.xls'
     return hiveNewServiceReportLocation
 
-def hiveRenewalsReportLocation():
+def hiveRenewalsReportLocation(*args): #if a date is passed, use that to construct the file names
     hiveRenewalsReportLocation = homeFolder + 'hive_renewals_03102017.xls'
     return hiveRenewalsReportLocation

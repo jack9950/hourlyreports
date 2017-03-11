@@ -188,7 +188,7 @@ for agent_id in pogo_sales:
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-DEPP_sales = get_DEPP_sales(DEPPreportLocation())
+DEPP_sales = get_DEPP_sales(DEPPreportLocation(reportDate))
 
 for id in DEPP_sales:
     if (type(id) == str):
@@ -262,8 +262,8 @@ for agent_id in fcp_sales:
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-hive_new_service_sales = get_HIVE_new_service(hiveNewServiceReportLocation())
-hive_renewal_sales = get_HIVE_renewals(hiveRenewalsReportLocation())
+hive_new_service_sales = get_HIVE_new_service(hiveNewServiceReportLocation(reportDate))
+hive_renewal_sales = get_HIVE_renewals(hiveRenewalsReportLocation(reportDate))
 
 print("\nWriting out the HIVE sales to the template.......\n")
 for i in range(3, 50):

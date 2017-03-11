@@ -9,7 +9,13 @@ from teams import agent_ids_to_names
 
 def get_HIVE_renewals_breakdown(filename):
 # first open using xlrd    book = xlrd.open_workbook(filename)
-    book = xlrd.open_workbook(filename)
+    try:
+        book = xlrd.open_workbook(filename)
+    except FileNotFoundError:
+        print("File: ", filename)
+        print("\nFile not found...Exiting...")
+        sys.exit()
+        
     sheet = book.sheet_by_index(0)
     nrows, ncols = sheet.nrows, sheet.ncols
 

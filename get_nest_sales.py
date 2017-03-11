@@ -4,7 +4,13 @@ from openpyxl.reader.excel import load_workbook, InvalidFileException
 
 def get_nest_sales(filename):
     # first open the file using xlrd    book = xlrd.open_workbook(filename)
-    book = xlrd.open_workbook(filename)
+    try:
+        book = xlrd.open_workbook(filename)
+    except FileNotFoundError:
+        print("File: ", filename)
+        print("\nFile not found...Exiting...")
+        sys.exit()
+        
     sheet = book.sheet_by_index(0)
     nrows, ncols = sheet.nrows, sheet.ncols
 
@@ -16,7 +22,7 @@ def get_nest_sales(filename):
         #The agent ID is on column 16, the product name on column 5 and the bounce status on column 10
         agent_id = sheet.cell_value(row, 16)
         product_name = sheet.cell_value(row, 5)
-        
+
 
         if (agent_id != "" and
             product_name == "Nest TX" and
