@@ -1,3 +1,4 @@
+import sys
 import xlrd
 from openpyxl.workbook import Workbook
 from openpyxl.reader.excel import load_workbook, InvalidFileException
@@ -15,7 +16,7 @@ def get_HIVE_new_service_breakdown(filename):
         print("File: ", filename)
         print("\nFile not found...Exiting...")
         sys.exit()
-        
+
     sheet = book.sheet_by_index(0)
     nrows, ncols = sheet.nrows, sheet.ncols
 
@@ -35,7 +36,7 @@ def get_HIVE_new_service_breakdown(filename):
                 agent_name = agent_ids_to_names[agent_id]
                 pogo_account_number = sheet.cell_value(row,0)
                 pogo_order_number = sheet.cell_value(row,1)
-                plan_name = sheet.cell_value(row,5)
+                plan_name = "Home Hero 24" #force the plan name so that we can remove duplicates later
                 bounce_status = sheet.cell_value(row,10)
 
                 values.append([agent_name,

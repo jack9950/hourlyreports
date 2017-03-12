@@ -1,3 +1,4 @@
+import sys
 import xlrd
 import time
 from openpyxl.workbook import Workbook
@@ -14,7 +15,7 @@ def get_pogo_sales(filename):
         print("File: ", filename)
         print("\nFile not found...Exiting...")
         sys.exit()
-        
+
     sheet = book.sheet_by_index(0)
     nrows, ncols = sheet.nrows, sheet.ncols
 

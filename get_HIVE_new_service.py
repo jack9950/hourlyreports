@@ -1,3 +1,4 @@
+import sys
 import xlrd
 from openpyxl.workbook import Workbook
 from openpyxl.reader.excel import load_workbook, InvalidFileException
@@ -10,7 +11,7 @@ def get_HIVE_new_service(filename):
         print("File: ", filename)
         print("\nFile not found...Exiting...")
         sys.exit()
-        
+
     sheet = book.sheet_by_index(0)
     nrows, ncols = sheet.nrows, sheet.ncols
 
@@ -24,6 +25,8 @@ def get_HIVE_new_service(filename):
         agent_id = sheet.cell_value(row, 16)
         product_name = sheet.cell_value(row, 5)
         bounce_status = sheet.cell_value(row, 10)
+        account_number = sheet.cell_value(row, 0)
+        order_number = sheet.cell_value(row, 1)
 
         if (agent_id != None and
           (product_name == "Home Hero 24 - ONC" or
@@ -39,7 +42,8 @@ def get_HIVE_new_service(filename):
 	       bounce_status == "Deposit paid" or
 	       bounce_status == "Deposit waiver accepted")):
             #The format is [agent ID]
-            values.append(agent_id)
+            product_name = "Home Hero 24" #force the plan name so that we can remove duplicates later
+            values.append([agent_id, account_number, order_number, product_name])
             # print (sheet.cell_value(row,17), sheet.cell_value(row,6), sheet.cell_value(row,11))
 
     return values

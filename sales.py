@@ -13,10 +13,10 @@ from data_files import homeFolder, callsHandledReportLocation, pogoSalesReportLo
 from data_files import fcpReportLocation, DEPPreportLocation, hiveNewServiceReportLocation, hiveRenewalsReportLocation
 
 if len(sys.argv) == 1: #user did not pass a date argument
-    print('sys.argv[0]: ', sys.argv[0])
+    #print('sys.argv[0]: ', sys.argv[0])
     reportDate = ''
 elif len(sys.argv) == 2 and len(sys.argv[1]) == 8: #user passed a date argument - must be in format ddmmyyyy
-    print('sys.argv[1]: ', sys.argv[1])
+    #print('sys.argv[1]: ', sys.argv[1])
     reportDate = sys.argv[1]
 elif len(sys.argv) > 2 or ( len(sys.argv) == 2 and len(sys.argv[1]) != 8 ): #user passed more than one argument
     print("\nInvalid argument(s)...please enter a date in the format: 'ddmmyyyy' \n\n...exiting")
@@ -148,7 +148,7 @@ for item in calls_handled:
 
 print("\nGathering up all the orders from the big bounce sales report.......\n")
 
-pogo_sales = get_pogo_sales(pogoSalesReportLocation())
+pogo_sales = get_pogo_sales(pogoSalesReportLocation(reportDate))
 
 #Team leads usually submit POGO orders with their text POGO ID rather than the numeric one
 #Replace the team lead text POGO agent IDs with the numeric AVAYA IDs
@@ -229,9 +229,7 @@ for agent_id in DEPP_sales:
 
 print("\nOpening fcp report......\n")
 
-fcp_sales = get_fcp_sales(fcpReportLocation())
-
-#print fcp_sales
+fcp_sales = get_fcp_sales(fcpReportLocation(reportDate))
 
 #Write out the FCP sales to the template
 print("\nWriting out the FCP sales to the template.......\n")
@@ -257,13 +255,28 @@ for agent_id in fcp_sales:
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-#Gather up the HIVE sales from the Products report and
+#Gather up the HIVE sales from the Products report and HIVE Renewals report
 #write them out to the template
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 hive_new_service_sales = get_HIVE_new_service(hiveNewServiceReportLocation(reportDate))
 hive_renewal_sales = get_HIVE_renewals(hiveRenewalsReportLocation(reportDate))
+
+all_HIVE_sales = []
+
+for sale in hive_new_service_sales:
+    if sale not in all_HIVE_sales:
+        all_HIVE_sales.append(sale)
+
+for sale in hive_renewal_sales:
+    if sale not in all_HIVE_sales:
+        all_HIVE_sales.append(sale)
+
+IDs_with_HIVE_sales = []
+
+for sale in all_HIVE_sales:
+    IDs_with_HIVE_sales.append(sale[0])
 
 print("\nWriting out the HIVE sales to the template.......\n")
 for i in range(3, 50):
@@ -272,11 +285,12 @@ for i in range(3, 50):
     calls_handled_cell = "C"+str(i)
     calls_handled = template_first_sheet[calls_handled_cell].value
     if(agent_id != None and calls_handled != None):
-        template_first_sheet["I"+str(i)].value = (hive_new_service_sales.count(agent_id) +
-                                                 hive_renewal_sales.count(agent_id))
+        template_first_sheet["I"+str(i)].value = IDs_with_HIVE_sales.count(agent_id)
 
+#-------------------------------------------------------------------------------
 #Sum up the HIVE sales for each supervisor and for the whole of iQor
-for agent_id in hive_new_service_sales:
+#-------------------------------------------------------------------------------
+for agent_id in IDs_with_HIVE_sales:
     if agent_id in jaelesiaTeam:
         jaelesiaHiveSales += 1
         totalHiveSales += 1
@@ -287,18 +301,9 @@ for agent_id in hive_new_service_sales:
         antwonHiveSales += 1
         totalHiveSales += 1
 
-for agent_id in hive_renewal_sales:
-    if agent_id in jaelesiaTeam:
-        jaelesiaHiveSales += 1
-        totalHiveSales += 1
-    if agent_id in tekTeam:
-        tekHiveSales += 1
-        totalHiveSales += 1
-    if agent_id in antwonTeam:
-        antwonHiveSales += 1
-        totalHiveSales += 1
-
+#-------------------------------------------------------------------------------
 #Write out the agent close rates to the template
+#-------------------------------------------------------------------------------
 for i in range(3,50):
     try:
         closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
@@ -318,12 +323,12 @@ for i in range(3,50):
         pass
 
     #Write out the supervisor and iQor totals to the template
+    #Add all the fonts and the conditional color formats
     if template_first_sheet["b" + str(i)].value == "JAELESIA MOORE Total":
         template_first_sheet["c" + str(i)].value = jaelesiaTotalCallsHandled
         template_first_sheet["d" + str(i)].value = jaelesiaSalesCallsHandled
         template_first_sheet["e" + str(i)].value = jaelesiaTotalSales
         template_first_sheet["g" + str(i)].value = jaelesiaFCPsales
-        #template_first_sheet["h" + str(i)].value = jaelesiaNestSales
         template_first_sheet["h" + str(i)].value = jaelesiaDEPPsales
         template_first_sheet["i" + str(i)].value = jaelesiaHiveSales
         try:
@@ -334,7 +339,6 @@ for i in range(3,50):
             pass
 
         closeRateCell = template_first_sheet["f" + str(i)]
-        # print(closeRate)
         if closeRate < 0.4:
             closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
             closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
@@ -424,13 +428,19 @@ for i in range(3,50):
             closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
 
 #-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #We are done! - Save the template as final.xlsx
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 print("\nSaving final template.......")
 
 finalReportName = 'SalesReport'
 currentDate = datetime.now().strftime("%m%d%Y")
 currentTime = time.strftime("%I%M%S%p")
-template.save(homeFolder + finalReportName + "_" + currentDate + "_" + currentTime + ".xlsx")
+
+if len(sys.argv) == 1: #user did not pass a date argument
+    template.save(homeFolder + finalReportName + "_" + currentDate + "_" + currentTime + ".xlsx")
+elif len(sys.argv) == 2:
+    template.save(homeFolder + '\\' + reportDate + '\\' + finalReportName + "_" + reportDate + "_" + currentTime + ".xlsx")
 
 print("\nDone.......\n")
