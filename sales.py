@@ -229,7 +229,7 @@ for agent_id in DEPP_sales:
 
 print("\nOpening fcp report......\n")
 
-fcp_sales = get_fcp_sales(fcpReportLocation(reportDate))
+fcp_sales = get_fcp_sales(fcpReportLocation(reportDate), reportDate)
 
 #Write out the FCP sales to the template
 print("\nWriting out the FCP sales to the template.......\n")

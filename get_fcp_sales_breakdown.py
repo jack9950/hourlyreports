@@ -5,10 +5,10 @@ from openpyxl.reader.excel import load_workbook, InvalidFileException
 from datetime import date
 from teams import agent_ids_to_names
 
-def get_fcp_sales_breakdown(filename):
+def get_fcp_sales_breakdown(*args):
 # first open using xlrd    book = xlrd.open_workbook(filename)
     try:
-        book = xlrd.open_workbook(filename)
+        book = xlrd.open_workbook(args[0])
     except FileNotFoundError:
         print("File: ", filename)
         print("\nFile not found...Exiting...")
@@ -19,6 +19,22 @@ def get_fcp_sales_breakdown(filename):
 
     values = []
 
+    if args[1] == '':
+        saleDate = date.today()
+    else:
+        # print("args[1]: ", args[1])
+        customDate = args[1]
+        # print("customDate: ", customDate, type(customDate))
+        year = customDate[4:]
+        # print("year: ", year)
+        year = int(year)
+        month = customDate[0:2]
+        month = int(month)
+        day = customDate[2:4]
+        day = int(day)
+
+        saleDate = date(year, month, day)
+
     for row in range(1, nrows):
 
         date_of_sale = sheet.cell_value(row,7).split("-")
@@ -26,7 +42,7 @@ def get_fcp_sales_breakdown(filename):
         account_number = sheet.cell_value(row,1)
         agent_id = sheet.cell_value(row,6)
 
-        if date_of_sale == date.today() and agent_id != '':
+        if date_of_sale == saleDate and agent_id != '':
 
             try:
                 agent_name = agent_ids_to_names[agent_id]

@@ -10,23 +10,29 @@ from get_fcp_opportunities_breakdown import get_fcp_opportunities_breakdown
 from get_fcp_sales_breakdown import get_fcp_sales_breakdown
 from teams import agent_ids_to_names
 import time
-from datetime import datetime
+from datetime import datetime, date
 from data_files import homeFolder, callsHandledReportLocation, pogoSalesReportLocation
 from data_files import fcpReportLocation, DEPPreportLocation, hiveNewServiceReportLocation, hiveRenewalsReportLocation
 
 if len(sys.argv) == 1: #user did not pass a date argument
     reportDate = ''
+    currentDate = datetime.now().strftime("%A %m-%d-%Y") #to be used to stamp the Excel reports
 elif len(sys.argv) == 2 and len(sys.argv[1]) == 8: #user passed a date argument - must be in format ddmmyyyy
     reportDate = sys.argv[1]
+    customDate = sys.argv[1]
+    year = int(customDate[4:])
+    month = int(customDate[0:2])
+    day = int(customDate[2:4])
+    currentDate = date(year, month, day)
+    currentDate = currentDate.strftime("%A %m-%d-%Y")
 elif len(sys.argv) > 2 or ( len(sys.argv) == 2 and len(sys.argv[1]) != 8 ): #user passed more than one argument
     print("\nInvalid argument(s)...please enter a date in the format: 'ddmmyyyy' \n\n...exiting")
     sys.exit(2)
     #to do - need to write regex to test for invalid characters and invalid dates
+print("reportDate: ", reportDate)
 
 firstRow = 4 #first row to start adding agent sales is row 4
 left_alignment = Alignment(horizontal='left')
-
-currentDate = datetime.now().strftime("%A %m-%d-%Y")
 
 #Open the template
 template = openpyxl.load_workbook(homeFolder + 'template_breakdown.xlsx')
@@ -134,7 +140,7 @@ for HIVE_sale in all_HIVE_sales:
 
 template_third_sheet["A2"] = currentDate #show the date at the top of the sheet
 
-fcp_sales = get_fcp_sales_breakdown(fcpReportLocation(reportDate))
+fcp_sales = get_fcp_sales_breakdown(fcpReportLocation(reportDate), reportDate)
 fcp_sales.sort()
 
 row = firstRow #first row to start adding agent sales is row 4
