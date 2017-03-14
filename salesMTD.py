@@ -15,7 +15,7 @@ from data_files import fcpReportLocation, DEPPreportLocation, hiveNewServiceRepo
 if len(sys.argv) == 1: #user did not pass a date argument
     #print('sys.argv[0]: ', sys.argv[0])
     reportDate = ''
-elif len(sys.argv) == 2 and len(sys.argv[1]) == 8: #user passed a date argument - must be in format ddmmyyyy
+elif len(sys.argv) == 2 and (len(sys.argv[1]) == 8 or sys.argv[1] == 'MTD' ): #user passed a date argument - must be in format ddmmyyyy
     #print('sys.argv[1]: ', sys.argv[1])
     reportDate = sys.argv[1]
 elif len(sys.argv) > 2 or ( len(sys.argv) == 2 and len(sys.argv[1]) != 8 ): #user passed more than one argument

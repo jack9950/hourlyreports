@@ -15,7 +15,7 @@ from data_files import fcpReportLocation, DEPPreportLocation, hiveNewServiceRepo
 if len(sys.argv) == 1: #user did not pass a date argument
     #print('sys.argv[0]: ', sys.argv[0])
     reportDate = ''
-elif len(sys.argv) == 2 and len(sys.argv[1]) == 8: #user passed a date argument - must be in format ddmmyyyy
+elif len(sys.argv) == 2 and (len(sys.argv[1]) == 8 or sys.argv[1] == 'MTD' ): #user passed a date argument - must be in format ddmmyyyy
     #print('sys.argv[1]: ', sys.argv[1])
     reportDate = sys.argv[1]
 elif len(sys.argv) > 2 or ( len(sys.argv) == 2 and len(sys.argv[1]) != 8 ): #user passed more than one argument
@@ -47,36 +47,12 @@ agentIDs = [2062004, 2062026, 2062043, 2062034, 2062053, 2062048, 2062042,
             2062056, 2062066, 2062057, 2062065, 2062060]
 
 jaelesiaTotalCallsHandled, tekTotalCallsHandled, antwonTotalCallsHandled, totalCallsHandled = 0, 0, 0, 0
-
-jaelesiaSalesCallsHandled = 0
-tekSalesCallsHandled = 0
-antwonSalesCallsHandled = 0
-totalSalesCallsHandled = 0
-
-jaelesiaTotalSales = 0
-tekTotalSales = 0
-antwonTotalSales = 0
-totalSales = 0
-
-jaelesiaFCPsales = 0
-tekFCPsales = 0
-antwonFCPsales = 0
-totalFCPSales = 0
-
-jaelesiaNestSales = 0
-tekNestSales = 0
-antwonNestSales = 0
-totalNestSales = 0
-
-jaelesiaDEPPsales = 0
-tekDEPPsales = 0
-antwonDEPPsales = 0
-totalDEPPsales =0
-
-jaelesiaHiveSales = 0
-tekHiveSales = 0
-antwonHiveSales = 0
-totalHiveSales = 0
+jaelesiaSalesCallsHandled, tekSalesCallsHandled, antwonSalesCallsHandled, totalSalesCallsHandled = 0, 0, 0, 0
+jaelesiaTotalSales, tekTotalSales, antwonTotalSales, totalSales = 0, 0, 0, 0
+jaelesiaFCPsales, tekFCPsales, antwonFCPsales, totalFCPSales= 0, 0, 0, 0
+jaelesiaNestSales, tekNestSales, antwonNestSales, totalNestSales= 0, 0, 0, 0
+jaelesiaDEPPsales, tekDEPPsales, antwonDEPPsales, totalDEPPsales= 0, 0, 0, 0
+jaelesiaHiveSales, tekHiveSales, antwonHiveSales, totalHiveSales = 0, 0, 0, 0
 
 supervisorIDs = {"aervin":2062007, "jnickerson":2062001, "tlevon": 2062007,
                  "jacksonn": 2062047, "jabram":2062017, "iqr_acollins":2062072,
