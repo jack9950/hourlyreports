@@ -40,7 +40,8 @@ def get_HIVE_new_service(filename):
 	       bounce_status == "Ercot/ISO Processing" or
 	       bounce_status == "Deposit due in first bill" or
 	       bounce_status == "Deposit paid" or
-	       bounce_status == "Deposit waiver accepted")):
+	       bounce_status == "Deposit waiver accepted"or
+           bounce_status == "Inactive")):
             #The format is [agent ID]
             product_name = "Home Hero 24" #force the plan name so that we can remove duplicates later
             values.append([agent_id, account_number, order_number, product_name])

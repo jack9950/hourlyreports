@@ -3,25 +3,25 @@ import openpyxl
 from openpyxl.styles import Style, Font, Border, Side, Fill, PatternFill
 import time
 from datetime import datetime
-from get_calls_handled import get_calls_handled
-from get_pogo_sales import get_pogo_sales
-from get_DEPP_sales import get_DEPP_sales
-from get_fcp_sales import get_fcp_sales
-from get_HIVE_new_service import get_HIVE_new_service
-from get_HIVE_renewals import get_HIVE_renewals
-from data_files import homeFolder, callsHandledReportLocation, pogoSalesReportLocation
-from data_files import fcpReportLocation, DEPPreportLocation, hiveNewServiceReportLocation, hiveRenewalsReportLocation
+from MTD import get_calls_handled
+from MTD import get_pogo_sales
+from MTD import get_DEPP_sales
+from MTD import get_fcp_sales
+from MTD import get_HIVE_new_service
+from MTD import get_HIVE_renewals
+from MTD import homeFolder, callsHandledReportLocation, pogoSalesReportLocation
+from MTD import fcpReportLocation, DEPPreportLocation, hiveNewServiceReportLocation, hiveRenewalsReportLocation
 
-if len(sys.argv) == 1: #user did not pass a date argument
-    #print('sys.argv[0]: ', sys.argv[0])
-    reportDate = ''
-elif len(sys.argv) == 2 and (len(sys.argv[1]) == 8 or sys.argv[1] == 'MTD' ): #user passed a date argument - must be in format ddmmyyyy
-    #print('sys.argv[1]: ', sys.argv[1])
-    reportDate = sys.argv[1]
-elif len(sys.argv) > 2 or ( len(sys.argv) == 2 and len(sys.argv[1]) != 8 ): #user passed more than one argument
-    print("\nInvalid argument(s)...please enter a date in the format: 'ddmmyyyy' \n\n...exiting")
-    sys.exit(2)
-    #to do - need to write regex to test for invalid characters and invalid dates
+# if len(sys.argv) == 1: #user did not pass a date argument
+#     #print('sys.argv[0]: ', sys.argv[0])
+#     reportDate = ''
+# elif len(sys.argv) == 2 and (len(sys.argv[1]) == 8 or sys.argv[1] == 'MTD' ): #user passed a date argument - must be in format ddmmyyyy
+#     #print('sys.argv[1]: ', sys.argv[1])
+#     reportDate = sys.argv[1]
+# elif len(sys.argv) > 2 or ( len(sys.argv) == 2 and len(sys.argv[1]) != 8 ): #user passed more than one argument
+#     print("\nInvalid argument(s)...please enter a date in the format: 'ddmmyyyy' \n\n...exiting")
+#     sys.exit(2)
+#     #to do - need to write regex to test for invalid characters and invalid dates
 
 #Cell Background and Font Styles (to be used to conditionally format cells)
 below_goal_text = "9C0006"
@@ -61,7 +61,7 @@ supervisorIDs = {"aervin":2062007, "jnickerson":2062001, "tlevon": 2062007,
 #Open the template file for editing:
 print("\nOpening template file for editing......\n")
 
-template = openpyxl.load_workbook(homeFolder + 'template_sales.xlsx')
+template = openpyxl.load_workbook(homeFolder + 'MTD\\template_sales_MTD.xlsx')
 template_sheets = template.get_sheet_names()
 template_first_sheet = template.get_sheet_by_name(template_sheets[0])
 
@@ -80,7 +80,7 @@ print("\nReading agent IDs and call counts.......\n")
 #The format returned is a 2 dimensional array with each agent and their calls represented as:
 #[agent ID, Calls Handled, Sales Calls Handled] in the return array
 
-calls_handled = get_calls_handled(callsHandledReportLocation(reportDate))
+calls_handled = get_calls_handled(callsHandledReportLocation)
 
 #Write out the call counts to the template file
 print("\nWriting call counts to the template file.......\n")
@@ -124,7 +124,7 @@ for item in calls_handled:
 
 print("\nGathering up all the orders from the big bounce sales report.......\n")
 
-pogo_sales = get_pogo_sales(pogoSalesReportLocation(reportDate))
+pogo_sales = get_pogo_sales(pogoSalesReportLocation)
 
 #Team leads usually submit POGO orders with their text POGO ID rather than the numeric one
 #Replace the team lead text POGO agent IDs with the numeric AVAYA IDs
@@ -164,7 +164,7 @@ for agent_id in pogo_sales:
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-DEPP_sales = get_DEPP_sales(DEPPreportLocation(reportDate))
+DEPP_sales = get_DEPP_sales(DEPPreportLocation)
 
 for id in DEPP_sales:
     if (type(id) == str):
@@ -205,7 +205,7 @@ for agent_id in DEPP_sales:
 
 print("\nOpening fcp report......\n")
 
-fcp_sales = get_fcp_sales(fcpReportLocation(reportDate), reportDate)
+fcp_sales = get_fcp_sales(fcpReportLocation)
 
 #Write out the FCP sales to the template
 print("\nWriting out the FCP sales to the template.......\n")
@@ -236,8 +236,9 @@ for agent_id in fcp_sales:
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-hive_new_service_sales = get_HIVE_new_service(hiveNewServiceReportLocation(reportDate))
-hive_renewal_sales = get_HIVE_renewals(hiveRenewalsReportLocation(reportDate))
+hive_new_service_sales = get_HIVE_new_service(hiveNewServiceReportLocation)
+hive_renewal_sales = get_HIVE_renewals(hiveRenewalsReportLocation)
+# hive_renewal_sales = get_HIVE_renewals()
 
 all_HIVE_sales = []
 
@@ -410,13 +411,10 @@ for i in range(3,50):
 #-------------------------------------------------------------------------------
 print("\nSaving final template.......")
 
-finalReportName = 'SalesReport'
+finalReportName = 'SalesReport_MTD'
 currentDate = datetime.now().strftime("%m%d%Y")
 currentTime = time.strftime("%I%M%S%p")
 
-if len(sys.argv) == 1: #user did not pass a date argument
-    template.save(homeFolder + finalReportName + "_" + currentDate + "_" + currentTime + ".xlsx")
-elif len(sys.argv) == 2:
-    template.save(homeFolder + '\\' + reportDate + '\\' + finalReportName + "_" + reportDate + "_" + currentTime + ".xlsx")
+template.save(homeFolder + 'MTD\\' + finalReportName + "_" + currentDate + "_" + currentTime + ".xlsx")
 
 print("\nDone.......\n")
