@@ -50,18 +50,18 @@ def get_pogo_sales(filename):
     nrows, ncols = sheet.nrows, sheet.ncols
 
     values = []
-
+    mylist = []
     for row in range(1, nrows):
         agent_id = sheet.cell_value(row,47)
         transfer_order = sheet.cell_value(row,13)
         order_status = sheet.cell_value(row,9)
         if (agent_id != ''
-            and transfer_order != 'N'
+            and transfer_order == 'N'
             and order_status != 'Test order'
             and order_status != 'Duplicate Order'):
             #The format is [agent ID]
             values.append(agent_id)
-            # print(sheet.cell_value(row,47), sheet.cell_value(row,13), sheet.cell_value(row,9))
+            # print(customer_id, order_id, order_status, transfer_order, agent_id)
 
     return values
 
@@ -159,8 +159,7 @@ def get_HIVE_new_service(filename):
 	       bounce_status == "Ercot/ISO Processing" or
 	       bounce_status == "Deposit due in first bill" or
 	       bounce_status == "Deposit paid" or
-	       bounce_status == "Deposit waiver accepted" or
-           bounce_status == "Inactive")):
+	       bounce_status == "Deposit waiver accepted")):
             #The format is [agent ID]
             product_name = "Home Hero 24" #force the plan name so that we can remove duplicates later
             values.append([agent_id, account_number, order_number, product_name])

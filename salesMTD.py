@@ -12,17 +12,6 @@ from MTD import get_HIVE_renewals
 from MTD import homeFolder, callsHandledReportLocation, pogoSalesReportLocation
 from MTD import fcpReportLocation, DEPPreportLocation, hiveNewServiceReportLocation, hiveRenewalsReportLocation
 
-# if len(sys.argv) == 1: #user did not pass a date argument
-#     #print('sys.argv[0]: ', sys.argv[0])
-#     reportDate = ''
-# elif len(sys.argv) == 2 and (len(sys.argv[1]) == 8 or sys.argv[1] == 'MTD' ): #user passed a date argument - must be in format ddmmyyyy
-#     #print('sys.argv[1]: ', sys.argv[1])
-#     reportDate = sys.argv[1]
-# elif len(sys.argv) > 2 or ( len(sys.argv) == 2 and len(sys.argv[1]) != 8 ): #user passed more than one argument
-#     print("\nInvalid argument(s)...please enter a date in the format: 'ddmmyyyy' \n\n...exiting")
-#     sys.exit(2)
-#     #to do - need to write regex to test for invalid characters and invalid dates
-
 #Cell Background and Font Styles (to be used to conditionally format cells)
 below_goal_text = "9C0006"
 below_goal_bg = "FFC7CE"
