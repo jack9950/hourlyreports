@@ -1,17 +1,14 @@
 import sys
 import openpyxl
-from openpyxl.styles import Style, Font, Border, Side, Fill, PatternFill
+from openpyxl.styles import Font, PatternFill
 import time
 from datetime import datetime
-from MTD import get_calls_handled
-from MTD import get_pogo_sales
-from MTD import get_DEPP_sales
-from MTD import get_fcp_sales
-from MTD import get_HIVE_new_service
-from MTD import get_HIVE_renewals
+print("importing my modules...")
+from MTD import get_calls_handled, get_pogo_sales, get_DEPP_sales, get_fcp_sales, get_HIVE_new_service, get_HIVE_renewals
 from MTD import homeFolder, callsHandledReportLocation, pogoSalesReportLocation
 from MTD import fcpReportLocation, DEPPreportLocation, hiveNewServiceReportLocation, hiveRenewalsReportLocation
 
+print("done importing...")
 #Cell Background and Font Styles (to be used to conditionally format cells)
 below_goal_text = "9C0006"
 below_goal_bg = "FFC7CE"
