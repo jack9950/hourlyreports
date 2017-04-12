@@ -318,6 +318,8 @@ for i in range(3,50):
 
     #Write out the supervisor and iQor totals to the template
     #Add all the fonts and the conditional color formats
+
+    #First Jaelesia's team:
     if template_first_sheet["b" + str(i)].value == "JAELESIA MOORE Total":
         template_first_sheet["c" + str(i)].value = jaelesiaTotalCallsHandled
         template_first_sheet["d" + str(i)].value = jaelesiaSalesCallsHandled
@@ -343,6 +345,7 @@ for i in range(3,50):
             closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=close_to_goal_text)
             closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
 
+    #Next Tek's team:
     if template_first_sheet["b" + str(i)].value == "TEK LEVON Total":
         template_first_sheet["c" + str(i)].value = tekTotalCallsHandled
         template_first_sheet["d" + str(i)].value = tekSalesCallsHandled
@@ -369,6 +372,7 @@ for i in range(3,50):
             closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=close_to_goal_text)
             closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
 
+    #Then Antwon's team:
     if template_first_sheet["b" + str(i)].value == "ANTWON COLLINS Total":
         template_first_sheet["c" + str(i)].value = antwonTotalCallsHandled
         template_first_sheet["d" + str(i)].value = antwonSalesCallsHandled
@@ -395,6 +399,7 @@ for i in range(3,50):
             closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=close_to_goal_text)
             closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
 
+    #Finally Jackson's team:
     if template_first_sheet["b" + str(i)].value == "JACKSON NDIHO Total":
         template_first_sheet["c" + str(i)].value = jacksonTotalCallsHandled
 
