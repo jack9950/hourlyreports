@@ -1,7 +1,7 @@
 jaelesiaTeam = [2062001, 2062011, 2062020, 2062026, 2062036, 2062048, 2062053, 2062054, 2062057, 2062062]
 tekTeam = [2062067, 2062051, 2062035, 2062015, 2062040, 2062010, 2062042, 2062024, 2062065, 2062060, 2062007]
 antwonTeam = [2062039, 2062073, 2062074, 2062052, 2062058, 2062018, 2062049, 2062076, 2062031, 2062044, 2062003, 2062032, 2062066]
-
+jacksonTeam = [2062090, 2062081, 2062082, 2062083, 2062084, 2062085, 2062086, 2062089]
 
 agent_ids_to_names = {2062026: "DOLORES BECERRA",
                       2062062: "ADRIANE BROWN",
@@ -37,6 +37,14 @@ agent_ids_to_names = {2062026: "DOLORES BECERRA",
                       2062003: "PAMELA WILLIAMS",
                       2062032: "LATOYIA WIMES",
                       2062066: "DOMINIQUE MURPH",
+                      2062090: "BOOTH, DEVONAE",
+                      2062081: "HAWKINS, LAKIESHA",
+                      2062082: "HAYMES, MONICA",
+                      2062083: "HOUSTON, KAMESHA",
+                      2062084: "JONES, BROOKE",
+                      2062085: "LEVETTE, CRYSTAL",
+                      2062086: "MARCO, CHRISTINA",
+                      2062089: "THORNE, ALICE",
                       "jnickerson": "JACQUELINE NICKERSON",
                       "aervin": "ANGELIQUE ERVIN"}
 

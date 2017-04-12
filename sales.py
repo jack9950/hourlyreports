@@ -37,6 +37,7 @@ tekTeam = [2062067, 2062051, 2062035, 2062015, 2062040, 2062010, 2062042,
            2062024, 2062065, 2062060, 2062007]
 antwonTeam = [2062039, 2062073, 2062074, 2062052, 2062058, 2062018, 2062049,
               2062076, 2062031, 2062044, 2062003, 2062032, 2062066]
+jacksonTeam = [2062090, 2062081, 2062082, 2062083, 2062084, 2062085, 2062086, 2062089]
 
 agentIDs = [2062004, 2062026, 2062043, 2062034, 2062053, 2062048, 2062042,
             2062011, 2062030, 2062045, 2062046, 2062016, 2062001, 2062036,
@@ -46,13 +47,13 @@ agentIDs = [2062004, 2062026, 2062043, 2062034, 2062053, 2062048, 2062042,
             2062054, 2062032, 2062033, 2062062, 2062070, 2062067, 2062058,
             2062056, 2062066, 2062057, 2062065, 2062060]
 
-jaelesiaTotalCallsHandled, tekTotalCallsHandled, antwonTotalCallsHandled, totalCallsHandled = 0, 0, 0, 0
-jaelesiaSalesCallsHandled, tekSalesCallsHandled, antwonSalesCallsHandled, totalSalesCallsHandled = 0, 0, 0, 0
-jaelesiaTotalSales, tekTotalSales, antwonTotalSales, totalSales = 0, 0, 0, 0
-jaelesiaFCPsales, tekFCPsales, antwonFCPsales, totalFCPSales= 0, 0, 0, 0
-jaelesiaNestSales, tekNestSales, antwonNestSales, totalNestSales= 0, 0, 0, 0
-jaelesiaDEPPsales, tekDEPPsales, antwonDEPPsales, totalDEPPsales= 0, 0, 0, 0
-jaelesiaHiveSales, tekHiveSales, antwonHiveSales, totalHiveSales = 0, 0, 0, 0
+jaelesiaTotalCallsHandled, tekTotalCallsHandled, antwonTotalCallsHandled, jacksonTotalCallsHandled, totalCallsHandled = 0, 0, 0, 0, 0
+jaelesiaSalesCallsHandled, tekSalesCallsHandled, antwonSalesCallsHandled, jacksonSalesCallsHandled, totalSalesCallsHandled = 0, 0, 0, 0, 0
+jaelesiaTotalSales, tekTotalSales, antwonTotalSales, jacksonTotalSales, totalSales = 0, 0, 0, 0, 0
+jaelesiaFCPsales, tekFCPsales, antwonFCPsales, jacksonFCPsales, totalFCPSales= 0, 0, 0, 0, 0
+jaelesiaNestSales, tekNestSales, antwonNestSales, jacksonNestSales, totalNestSales= 0, 0, 0, 0, 0
+jaelesiaDEPPsales, tekDEPPsales, antwonDEPPsales, jacksonDEPPsales, totalDEPPsales= 0, 0, 0, 0, 0
+jaelesiaHiveSales, tekHiveSales, antwonHiveSales, jacksonHiveSales, totalHiveSales = 0, 0, 0, 0, 0
 
 supervisorIDs = {"aervin":2062007, "jnickerson":2062001, "tlevon": 2062007,
                  "jacksonn": 2062047, "jabram":2062017, "iqr_acollins":2062072,
@@ -114,6 +115,11 @@ for item in calls_handled:
         antwonSalesCallsHandled += item[2]
         totalCallsHandled += item[1]
         totalSalesCallsHandled += item[2]
+    if agent_id in jacksonTeam:
+        jacksonTotalCallsHandled += item[1]
+        jacksonSalesCallsHandled += item[2]
+        totalCallsHandled += item[1]
+        totalSalesCallsHandled += item[2]
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -156,6 +162,9 @@ for agent_id in pogo_sales:
     if agent_id in antwonTeam:
         antwonTotalSales += 1
         totalSales += 1
+    if agent_id in jacksonTeam:
+        jacksonTotalSales += 1
+        totalSales += 1
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -195,6 +204,9 @@ for agent_id in DEPP_sales:
     if agent_id in antwonTeam:
         antwonDEPPsales += 1
         totalDEPPsales += 1
+    if agent_id in jacksonTeam:
+        jacksonDEPPsales += 1
+        totalDEPPsales += 1
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -227,6 +239,9 @@ for agent_id in fcp_sales:
         totalFCPSales += 1
     if agent_id in antwonTeam:
         antwonFCPsales += 1
+        totalFCPSales += 1
+    if agent_id in jacksonTeam:
+        jacksonFCPsales += 1
         totalFCPSales += 1
 
 #-------------------------------------------------------------------------------
@@ -275,6 +290,9 @@ for agent_id in IDs_with_HIVE_sales:
         totalHiveSales += 1
     if agent_id in antwonTeam:
         antwonHiveSales += 1
+        totalHiveSales += 1
+    if agent_id in jacksonTeam:
+        jacksonHiveSales += 1
         totalHiveSales += 1
 
 #-------------------------------------------------------------------------------
@@ -367,6 +385,32 @@ for i in range(3,50):
 
         closeRateCell = template_first_sheet["f" + str(i)]
 
+        if closeRate < 0.4:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
+        elif closeRate >= 0.5:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=at_or_above_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=at_or_above_goal_bg)
+        else:
+            closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=close_to_goal_text)
+            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
+
+    if template_first_sheet["b" + str(i)].value == "JACKSON NDIHO Total":
+        template_first_sheet["c" + str(i)].value = jacksonTotalCallsHandled
+
+        template_first_sheet["d" + str(i)].value = jacksonSalesCallsHandled
+        template_first_sheet["e" + str(i)].value = jacksonTotalSales
+        template_first_sheet["g" + str(i)].value = jacksonFCPsales
+        template_first_sheet["h" + str(i)].value = jacksonDEPPsales
+        template_first_sheet["i" + str(i)].value = jacksonHiveSales
+        try:
+            closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
+            template_first_sheet["f" + str(i)].value = closeRate
+            closeRateCell = template_first_sheet["f" + str(i)]
+        except:
+            pass
+
+        closeRateCell = template_first_sheet["f" + str(i)]
         if closeRate < 0.4:
             closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
             closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
