@@ -319,6 +319,8 @@ for i in range(3,50):
     #Write out the supervisor and iQor totals to the template
     #Add all the fonts and the conditional color formats
 
+    closeRate = None #Default close rate in case the team has not received any sales calls
+
     #First Jaelesia's team:
     if template_first_sheet["b" + str(i)].value == "JAELESIA MOORE Total":
         template_first_sheet["c" + str(i)].value = jaelesiaTotalCallsHandled
@@ -327,6 +329,7 @@ for i in range(3,50):
         template_first_sheet["g" + str(i)].value = jaelesiaFCPsales
         template_first_sheet["h" + str(i)].value = jaelesiaDEPPsales
         template_first_sheet["i" + str(i)].value = jaelesiaHiveSales
+
         try:
             closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
             template_first_sheet["f" + str(i)].value = closeRate
@@ -335,7 +338,9 @@ for i in range(3,50):
             pass
 
         closeRateCell = template_first_sheet["f" + str(i)]
-        if closeRate < 0.4:
+        if closeRate == None:
+            pass
+        elif closeRate < 0.4:
             closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
             closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
         elif closeRate >= 0.5:
@@ -362,7 +367,9 @@ for i in range(3,50):
 
         closeRateCell = template_first_sheet["f" + str(i)]
 
-        if closeRate < 0.4:
+        if closeRate == None:
+            pass
+        elif closeRate < 0.4:
             closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
             closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
         elif closeRate >= 0.5:
@@ -389,7 +396,9 @@ for i in range(3,50):
 
         closeRateCell = template_first_sheet["f" + str(i)]
 
-        if closeRate < 0.4:
+        if closeRate == None:
+            pass
+        elif closeRate < 0.4:
             closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
             closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
         elif closeRate >= 0.5:
@@ -416,7 +425,10 @@ for i in range(3,50):
             pass
 
         closeRateCell = template_first_sheet["f" + str(i)]
-        if closeRate < 0.4:
+        
+        if closeRate == None:
+            pass
+        elif closeRate < 0.4:
             closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
             closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
         elif closeRate >= 0.5:
