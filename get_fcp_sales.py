@@ -13,7 +13,7 @@ def get_fcp_sales(*args):
     except FileNotFoundError:
         print("File: ", filename)
         print("\nFile not found...Exiting...")
-        sys.exit()
+        raise
 
     sheet = book.sheet_by_index(0)
     nrows, ncols = sheet.nrows, sheet.ncols

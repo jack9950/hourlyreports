@@ -11,7 +11,7 @@ def get_calls_handled(filename):
         print("File: ", filename)
         print("\nFile not found...Exiting...")
         raise
-        #sys.exit()
+        #raise
 
     sheet = book.sheet_by_index(1)
     nrows, ncols = sheet.nrows, sheet.ncols

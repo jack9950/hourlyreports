@@ -3,12 +3,10 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill
 import time
 from datetime import datetime
-print("importing my modules...")
 from MTD import get_calls_handled, get_pogo_sales, get_DEPP_sales, get_fcp_sales, get_HIVE_new_service, get_HIVE_renewals
 from MTD import homeFolder, callsHandledReportLocation, pogoSalesReportLocation
 from MTD import fcpReportLocation, DEPPreportLocation, hiveNewServiceReportLocation, hiveRenewalsReportLocation
 
-print("done importing...")
 #Cell Background and Font Styles (to be used to conditionally format cells)
 below_goal_text = "9C0006"
 below_goal_bg = "FFC7CE"

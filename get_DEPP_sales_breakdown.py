@@ -15,7 +15,7 @@ def get_DEPP_sales_breakdown(filename):
     except FileNotFoundError:
         print("File: ", filename)
         print("\nFile not found...Exiting...")
-        sys.exit()
+        raise
 
     sheet = book.sheet_by_index(0)
     nrows, ncols = sheet.nrows, sheet.ncols
