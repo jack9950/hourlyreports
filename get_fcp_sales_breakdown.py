@@ -41,8 +41,9 @@ def get_fcp_sales_breakdown(*args):
         date_of_sale = date(int(date_of_sale[0]), int(date_of_sale[1]), int(date_of_sale[2]))
         account_number = sheet.cell_value(row,1)
         agent_id = sheet.cell_value(row,6)
+        product_name = sheet.cell_value(row,4)
 
-        if date_of_sale == saleDate and agent_id != '':
+        if date_of_sale == saleDate and agent_id != '' and product_name[0:11] == "Power-To-Go":
 
             try:
                 agent_name = agent_ids_to_names[agent_id]

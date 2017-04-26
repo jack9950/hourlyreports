@@ -30,7 +30,8 @@ agentIDs = [2062004, 2062026, 2062043, 2062034, 2062053, 2062048, 2062042,
             2062031, 2062044, 2062003, 2062028, 2062022, 2062051, 2062021,
             2062035, 2062007, 2062020, 2062015, 2062040, 2062010, 2062018,
             2062054, 2062032, 2062033, 2062062, 2062070, 2062067, 2062058,
-            2062056, 2062066, 2062057, 2062065, 2062060]
+            2062056, 2062066, 2062057, 2062065, 2062060, 2062090, 2062081,
+            2062082, 2062083, 2062084, 2062085, 2062086, 2062089]
 
 jaelesiaTotalCallsHandled, tekTotalCallsHandled, antwonTotalCallsHandled, jacksonTotalCallsHandled, totalCallsHandled = 0, 0, 0, 0, 0
 jaelesiaSalesCallsHandled, tekSalesCallsHandled, antwonSalesCallsHandled, jacksonSalesCallsHandled, totalSalesCallsHandled = 0, 0, 0, 0, 0
@@ -63,8 +64,8 @@ template_first_sheet = template.get_sheet_by_name(template_sheets[0])
 
 print("\nReading agent IDs and call counts.......\n")
 
-#The format returned is a 2 dimensional array with each agent and their calls represented as:
-#[agent ID, Calls Handled, Sales Calls Handled] in the return array
+#The format returned by get_calls_handled is a 2 dimensional array with each agent
+#and their calls represented as: [agent ID, Calls Handled, Sales Calls Handled] in the return array
 
 calls_handled = get_calls_handled(callsHandledReportLocation)
 

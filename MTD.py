@@ -19,9 +19,7 @@ def get_calls_handled(filename):
         print("File: ", filename)
         print("\nFile not found...Exiting...")
         raise
-        #raise
 
-    # sheet = book.sheet_by_index(1)
     sheet = book.sheet_by_name('MTD ')
     nrows, ncols = sheet.nrows, sheet.ncols
 

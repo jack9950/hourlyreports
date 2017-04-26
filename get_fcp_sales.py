@@ -40,11 +40,12 @@ def get_fcp_sales(*args):
 
         date_of_sale = sheet.cell_value(row,7).split("-")
         date_of_sale = date(int(date_of_sale[0]), int(date_of_sale[1]), int(date_of_sale[2]))
+        product_name = sheet.cell_value(row,4)
         # print(date_of_sale, saleDate)
         # print("date_of_sale == saleDate: ", date_of_sale == saleDate)
 
         #Format returned in [agent_id]
-        if date_of_sale == saleDate:
+        if date_of_sale == saleDate and product_name[0:11] == "Power-To-Go":
             agent_id = sheet.cell_value(row,6)
             values.append(agent_id)
 
