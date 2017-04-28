@@ -451,8 +451,10 @@ for i in range(3,50):
             pass
 
         closeRateCell = template_first_sheet["f" + str(i)]
-
-        if closeRate < 0.4:
+        
+        if closeRate == None:
+            pass
+        elif closeRate < 0.4:
             closeRateCell.font = Font(name='Calibri', size=13, bold=True, color=below_goal_text)
             closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
         elif closeRate >= 0.5:
