@@ -7,10 +7,8 @@ from get_calls_handled import get_calls_handled
 from get_pogo_sales import get_pogo_sales
 from get_DEPP_sales import get_DEPP_sales
 from get_fcp_sales import get_fcp_sales
-from get_HIVE_new_service import get_HIVE_new_service
-from get_HIVE_renewals import get_HIVE_renewals
 from data_files import homeFolder, callsHandledReportLocation, pogoSalesReportLocation
-from data_files import fcpReportLocation, DEPPreportLocation, hiveNewServiceReportLocation, hiveRenewalsReportLocation
+from data_files import fcpReportLocation, DEPPreportLocation
 
 if len(sys.argv) == 1: #user did not pass a date argument
     reportDate = ''
@@ -51,7 +49,6 @@ jaelesiaTotalSales, tekTotalSales, antwonTotalSales, jacksonTotalSales, totalSal
 jaelesiaFCPsales, tekFCPsales, antwonFCPsales, jacksonFCPsales, totalFCPSales= 0, 0, 0, 0, 0
 jaelesiaNestSales, tekNestSales, antwonNestSales, jacksonNestSales, totalNestSales= 0, 0, 0, 0, 0
 jaelesiaDEPPsales, tekDEPPsales, antwonDEPPsales, jacksonDEPPsales, totalDEPPsales= 0, 0, 0, 0, 0
-jaelesiaHiveSales, tekHiveSales, antwonHiveSales, jacksonHiveSales, totalHiveSales = 0, 0, 0, 0, 0
 
 supervisorIDs = {"aervin":2062007, "jnickerson":2062001, "tlevon": 2062007,
                  "jacksonn": 2062047, "jabram":2062017, "iqr_acollins":2062072,
@@ -243,57 +240,6 @@ for agent_id in fcp_sales:
         totalFCPSales += 1
 
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#Gather up the HIVE sales from the Products report and HIVE Renewals report
-#write them out to the template
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-
-hive_new_service_sales = get_HIVE_new_service(hiveNewServiceReportLocation(reportDate))
-hive_renewal_sales = get_HIVE_renewals(hiveRenewalsReportLocation(reportDate))
-
-all_HIVE_sales = []
-
-for sale in hive_new_service_sales:
-    if sale not in all_HIVE_sales:
-        all_HIVE_sales.append(sale)
-
-for sale in hive_renewal_sales:
-    if sale not in all_HIVE_sales:
-        all_HIVE_sales.append(sale)
-
-IDs_with_HIVE_sales = []
-
-for sale in all_HIVE_sales:
-    IDs_with_HIVE_sales.append(sale[0])
-
-print("\nWriting out the HIVE sales to the template.......\n")
-for i in range(3, 50):
-    agent_id_cell = "A"+str(i)
-    agent_id = template_first_sheet[agent_id_cell].value
-    calls_handled_cell = "C"+str(i)
-    calls_handled = template_first_sheet[calls_handled_cell].value
-    if(agent_id != None and calls_handled != None):
-        template_first_sheet["I"+str(i)].value = IDs_with_HIVE_sales.count(agent_id)
-
-#-------------------------------------------------------------------------------
-#Sum up the HIVE sales for each supervisor and for the whole of iQor
-#-------------------------------------------------------------------------------
-for agent_id in IDs_with_HIVE_sales:
-    if agent_id in jaelesiaTeam:
-        jaelesiaHiveSales += 1
-        totalHiveSales += 1
-    if agent_id in tekTeam:
-        tekHiveSales += 1
-        totalHiveSales += 1
-    if agent_id in antwonTeam:
-        antwonHiveSales += 1
-        totalHiveSales += 1
-    if agent_id in jacksonTeam:
-        jacksonHiveSales += 1
-        totalHiveSales += 1
-
-#-------------------------------------------------------------------------------
 #Write out the agent close rates to the template
 #-------------------------------------------------------------------------------
 for i in range(3,50):
@@ -326,7 +272,6 @@ for i in range(3,50):
         template_first_sheet["e" + str(i)].value = jaelesiaTotalSales
         template_first_sheet["g" + str(i)].value = jaelesiaFCPsales
         template_first_sheet["h" + str(i)].value = jaelesiaDEPPsales
-        template_first_sheet["i" + str(i)].value = jaelesiaHiveSales
 
         try:
             closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
@@ -355,7 +300,7 @@ for i in range(3,50):
         template_first_sheet["e" + str(i)].value = tekTotalSales
         template_first_sheet["g" + str(i)].value = tekFCPsales
         template_first_sheet["h" + str(i)].value = tekDEPPsales
-        template_first_sheet["i" + str(i)].value = tekHiveSales
+
         try:
             closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
             template_first_sheet["f" + str(i)].value = closeRate
@@ -384,7 +329,7 @@ for i in range(3,50):
         template_first_sheet["e" + str(i)].value = antwonTotalSales
         template_first_sheet["g" + str(i)].value = antwonFCPsales
         template_first_sheet["h" + str(i)].value = antwonDEPPsales
-        template_first_sheet["i" + str(i)].value = antwonHiveSales
+
         try:
             closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
             template_first_sheet["f" + str(i)].value = closeRate
@@ -414,7 +359,7 @@ for i in range(3,50):
         template_first_sheet["e" + str(i)].value = jacksonTotalSales
         template_first_sheet["g" + str(i)].value = jacksonFCPsales
         template_first_sheet["h" + str(i)].value = jacksonDEPPsales
-        template_first_sheet["i" + str(i)].value = jacksonHiveSales
+
         try:
             closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
             template_first_sheet["f" + str(i)].value = closeRate
@@ -442,7 +387,7 @@ for i in range(3,50):
         template_first_sheet["e" + str(i)].value = totalSales
         template_first_sheet["g" + str(i)].value = totalFCPSales
         template_first_sheet["h" + str(i)].value = totalDEPPsales
-        template_first_sheet["i" + str(i)].value = totalHiveSales
+
         try:
             closeRate = (template_first_sheet["e" + str(i)].value + template_first_sheet["g" + str(i)].value) / template_first_sheet["d" + str(i)].value
             template_first_sheet["f" + str(i)].value = closeRate
@@ -451,7 +396,7 @@ for i in range(3,50):
             pass
 
         closeRateCell = template_first_sheet["f" + str(i)]
-        
+
         if closeRate == None:
             pass
         elif closeRate < 0.4:
