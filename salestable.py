@@ -11,6 +11,8 @@ from get_fcp_sales import get_fcp_sales
 from data_files import homeFolder
 from data_files import callsHandledReportLocation, pogoSalesReportLocation
 from data_files import fcpReportLocation, DEPPreportLocation
+from data_files import tableNames
+from data_files import jaelesiaTeam, tekTeam, antwonTeam
 from tableformat import topOfTable
 from tableformat import agentRowStart, agentRowEnd
 from tableformat import agentIDStart, agentIDEnd
@@ -21,6 +23,17 @@ from tableformat import bounceSalesStart, bounceSalesEnd
 from tableformat import closeRateStartRed, closeRateStartYellow, closeRateStartGreen, closeRateEnd
 from tableformat import FCPSalesStart, FCPSalesEnd
 from tableformat import DEPPSalesStart, DEPPSalesEnd
+from tableformat import supRowStart, supRowEnd, grandTotalRowStart, grandTotalRowEnd
+from tableformat import supIDStart, supNameStart, supCallsHandledStart
+from tableformat import supSalesCallsHandledStart
+from tableformat import supBounceSalesStart, supCloseRateStartRed
+from tableformat import supCloseRateStartYellow, supCloseRateStartGreen
+from tableformat import supFCPSalesStart, supDEPPSalesStart
+from tableformat import gTotalIDStart, gTotalNameStart, gTotalCallsHandledStart
+from tableformat import gTotalSalesCallsHandledStart
+from tableformat import gTotalBounceSalesStart, gTotalCloseRateStartRed
+from tableformat import gTotalCloseRateStartYellow, gTotalCloseRateStartGreen
+from tableformat import gTotalFCPSalesStart, gTotalDEPPSalesStart
 
 
 if len(sys.argv) == 1:  # user did not pass a date argument
@@ -43,14 +56,6 @@ close_to_goal_bg = "FFEB9C"
 at_or_above_goal_text = "006100"
 at_or_above_goal_bg = "C6EFCE"
 
-jaelesiaTeam = [2062001, 2062011, 2062020, 2062026, 2062036, 2062048, 2062053,
-                2062054, 2062057, 2062062]
-tekTeam = [2062067, 2062051, 2062035, 2062015, 2062040, 2062010, 2062042,
-           2062024, 2062065, 2062060, 2062007]
-antwonTeam = [2062039, 2062073, 2062074, 2062052, 2062058, 2062018, 2062049,
-              2062076, 2062031, 2062044, 2062003, 2062032, 2062066]
-jacksonTeam = [2062090, 2062081, 2062082, 2062083,
-               2062084, 2062085, 2062086, 2062089]
 
 agentIDs = [2062004, 2062026, 2062043, 2062034, 2062053, 2062048, 2062042,
             2062011, 2062030, 2062045, 2062046, 2062016, 2062001, 2062036,
@@ -85,64 +90,253 @@ template_sheets = template.get_sheet_names()
 template_first_sheet = template.get_sheet_by_name(template_sheets[0])
 
 
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# Open the Bounce Hourly Sales Report from iQor,
-# Retrieve data and add to summary tab of template excel file
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
+"""
+agentRowStart
++ agentIDStart + agentID + agentIDEnd
++ agentNameStart + agentName + agentNameEnd
++ callsHandledStart + callsHandled + callsHandledEnd
++ salesCallsHandledStart + salesCallsHandled + salesCallsHandledEnd
++ bounceSalesStart + bounceSales + bounceSalesEnd
++ closeRateStartRed + closeRate + closeRateEnd
++ FCPSalesStart + FCPSales + FCPSalesEnd
++ DEPPSalesStart + DEPPSales + DEPPSalesEnd
++ agentRowEnd
 
+"""
+
+html = topOfTable
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Get the calls handled for each agent
-
-print("\nReading agent IDs and call counts.......\n")
-
 # The format returned is a 2 dimensional array with each agent and their calls
 # represented as:
 # [agent ID, Calls Handled, Sales Calls Handled] in the return array
-
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 calls_handled = get_calls_handled(callsHandledReportLocation(reportDate))
-
-# Write out the call counts to the template file
-print("\nWriting call counts to the template file.......\n")
-for row in range(3, 60):
-    agent_id_cell = "A" + str(row)
-    agent_id = template_first_sheet[agent_id_cell].value
-
-    # retrieve each agent ID from the template and check if it is the list.
-    # if found write the calls handled and sales calls handled to template file
-    if(agent_id is not None):
-        for item in calls_handled:  # check each nested list
-
-            # if found and total calls > 0, write calls data to template
-            if agent_id in item and item[1] != 0:
-                # Total Calls Handled
-                template_first_sheet["C" + str(row)].value = item[1]
-                # Sales Calls Handled
-                template_first_sheet["D" + str(row)].value = item[2]
 
 # Sum up the calls handled for each supervisor and for the whole of iQor
 for item in calls_handled:
-    agent_id = item[0]
-    if agent_id in jaelesiaTeam:
+    agentID = item[0]
+    if agentID in jaelesiaTeam:
         jaelesiaTotalCallsHandled += item[1]
         jaelesiaSalesCallsHandled += item[2]
         totalCallsHandled += item[1]
         totalSalesCallsHandled += item[2]
-    if agent_id in tekTeam:
+    if agentID in tekTeam:
         tekTotalCallsHandled += item[1]
         tekSalesCallsHandled += item[2]
         totalCallsHandled += item[1]
         totalSalesCallsHandled += item[2]
-    if agent_id in antwonTeam:
+    if agentID in antwonTeam:
         antwonTotalCallsHandled += item[1]
         antwonSalesCallsHandled += item[2]
         totalCallsHandled += item[1]
         totalSalesCallsHandled += item[2]
-    if agent_id in jacksonTeam:
-        jacksonTotalCallsHandled += item[1]
-        jacksonSalesCallsHandled += item[2]
-        totalCallsHandled += item[1]
-        totalSalesCallsHandled += item[2]
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Gather up all the orders from the big bounce sales report
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+pogo_sales = get_pogo_sales(pogoSalesReportLocation(reportDate))
+
+# Team leads also submit POGO orders with text POGO ID rather than numeric ID
+# Replace the team lead text POGO agent IDs with the numeric AVAYA IDs
+for id in pogo_sales:
+    if (type(id) == str):
+        try:
+            pogo_sales[pogo_sales.index(id)] = supervisorIDs[id]
+        except:
+            pass
+
+# Sum up the POGO sales for each supervisor and for the whole of iQor
+for agentID in pogo_sales:
+    if agentID in jaelesiaTeam:
+        jaelesiaTotalSales += 1
+        totalSales += 1
+    if agentID in tekTeam:
+        tekTotalSales += 1
+        totalSales += 1
+    if agentID in antwonTeam:
+        antwonTotalSales += 1
+        totalSales += 1
+
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Gather up the FCP sales from the FCP report and
+# write them out to the template
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+fcp_sales = get_fcp_sales(fcpReportLocation(reportDate), reportDate)
+
+# Sum up the fcp sales for each supervisor and for the whole of iQor
+for agentID in fcp_sales:
+    if agentID in jaelesiaTeam:
+        jaelesiaFCPsales += 1
+        totalFCPSales += 1
+    if agentID in tekTeam:
+        tekFCPsales += 1
+        totalFCPSales += 1
+    if agentID in antwonTeam:
+        antwonFCPsales += 1
+        totalFCPSales += 1
+
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Gather up the DEPP sales from the Products report and
+# write them out to the template
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+DEPP_sales = get_DEPP_sales(DEPPreportLocation(reportDate))
+
+for id in DEPP_sales:
+    if (type(id) == str):
+        try:
+            DEPP_sales[DEPP_sales.index(id)] = supervisorIDs[id]
+        except:
+            pass
+
+# Sum up the DEPP sales for each supervisor and for the whole of iQor
+for agentID in DEPP_sales:
+    if agentID in jaelesiaTeam:
+        jaelesiaDEPPsales += 1
+        totalDEPPsales += 1
+    if agentID in tekTeam:
+        tekDEPPsales += 1
+        totalDEPPsales += 1
+    if agentID in antwonTeam:
+        antwonDEPPsales += 1
+        totalDEPPsales += 1
+
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Run through each entry in the tableNames and build the HTML string to be
+# attached to the body of the email
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+for agentRow in tableNames:
+    agentID = agentRow[0]
+    agentName = agentRow[1]
+    callsHandled = ""
+    callsHandledInteger = 0
+    salesCallsHandled = ""
+    bounceSales = ""
+    closeRate = ""
+    FCPSales = ""
+    DEPPSales = ""
+
+    # This is executed if it is an agent and not a supervisor
+    if (type(agentID) == int):
+
+        # Get the agent calls handled and sales calls handled
+        for item in calls_handled:  # check each nested list
+            if (agentID == item[0]):
+                callsHandledInteger = item[1]
+                salesCallsHandledInteger = item[2]
+                if callsHandledInteger > 0:
+                    callsHandled = str(int(item[1]))
+                    salesCallsHandled = str(int(item[2]))
+
+        # Get the agent Bounce Sales
+        if (callsHandled is not ""):
+            bounceSales = str(pogo_sales.count(agentID))
+            bounceSalesInteger = pogo_sales.count(agentID)
+
+        # Get the agent FCP Sales
+        if (callsHandled is not ""):
+            FCPSales = str(fcp_sales.count(agentID))
+            FCPSalesInteger = fcp_sales.count(agentID)
+
+        # Get the agent Close Rate
+        if (salesCallsHandled is not ""):
+            if (int(salesCallsHandled) > 0):
+                closeRate = ((bounceSalesInteger + FCPSalesInteger) /
+                             salesCallsHandledInteger * 100.00)
+                print("floatcloseRate: ", closeRate)
+                print("intcloseRate: ", int(closeRate))
+                print("floatcloseRate Rounded: ", round(closeRate))
+                closeRate = str(int(round(closeRate, 0))) + "%"
+
+        # Get the agent DEPP Sales
+        if (callsHandled is not ""):
+            DEPPSales = str(DEPP_sales.count(agentID))
+
+        agentID = str(agentID)
+        html += (agentRowStart
+                 + agentIDStart + agentID + agentIDEnd
+                 + agentNameStart + agentName + agentNameEnd
+                 + callsHandledStart + callsHandled + callsHandledEnd
+                 + salesCallsHandledStart + salesCallsHandled + salesCallsHandledEnd
+                 + bounceSalesStart + bounceSales + bounceSalesEnd
+                 + closeRateStartRed + closeRate + closeRateEnd
+                 + FCPSalesStart + FCPSales + FCPSalesEnd
+                 + DEPPSalesStart + DEPPSales + DEPPSalesEnd
+                 + agentRowEnd)
+
+    # This is executed if it is a supervisor
+    if (agentID == 'jaelesia' or agentID == 'tek' or
+            agentID == 'antwon'):
+        if (agentID == 'jaelesia'):
+            callsHandled = str(int(jaelesiaTotalCallsHandled))
+            salesCallsHandled = str(int(jaelesiaSalesCallsHandled))
+            bounceSales = str(jaelesiaTotalSales)
+            DEPPSales = str(jaelesiaDEPPsales)
+        elif (agentID == 'tek'):
+            callsHandled = str(int(tekTotalCallsHandled))
+            salesCallsHandled = str(int(tekSalesCallsHandled))
+            bounceSales = str(tekTotalSales)
+            DEPPSales = str(tekDEPPsales)
+        elif (agentID == 'antwon'):
+            callsHandled = str(int(antwonTotalCallsHandled))
+            salesCallsHandled = str(int(antwonSalesCallsHandled))
+            bounceSales = str(antwonTotalSales)
+            DEPPSales = str(antwonDEPPsales)
+
+        agentID = "&nbsp;"
+        html += (supRowStart
+                 + supIDStart + agentID + agentIDEnd
+                 + supNameStart + agentName + agentNameEnd
+                 + supCallsHandledStart + callsHandled + callsHandledEnd
+                 + supSalesCallsHandledStart + salesCallsHandled + salesCallsHandledEnd
+                 + supBounceSalesStart + bounceSales + bounceSalesEnd
+                 + supCloseRateStartRed + closeRate + closeRateEnd
+                 + supFCPSalesStart + FCPSales + FCPSalesEnd
+                 + supDEPPSalesStart + DEPPSales + DEPPSalesEnd
+                 + supRowEnd)
+
+    # This is executed if it is grand Total
+    if agentID == 'grandTotal':
+        callsHandled = str(int(totalCallsHandled))
+        salesCallsHandled = str(int(totalSalesCallsHandled))
+        bounceSales = str(totalSales)
+        DEPPSales = str(totalDEPPsales)
+
+        agentID = "&nbsp;"
+        html += (grandTotalRowStart
+                 + gTotalIDStart + agentID + agentIDEnd
+                 + gTotalNameStart + agentName + agentNameEnd
+                 + gTotalCallsHandledStart + callsHandled + callsHandledEnd
+                 + gTotalSalesCallsHandledStart + salesCallsHandled + salesCallsHandledEnd
+                 + gTotalBounceSalesStart + bounceSales + bounceSalesEnd
+                 + gTotalCloseRateStartRed + closeRate + closeRateEnd
+                 + gTotalFCPSalesStart + FCPSales + FCPSalesEnd
+                 + gTotalDEPPSalesStart + DEPPSales + DEPPSalesEnd
+                 + grandTotalRowEnd)
+
+    print(agentID, agentName, callsHandled, salesCallsHandled, closeRate)
+
+    # Get the agent's Bounce Sales
+
+    # Calculate the agent's close rate
+
+    # Get the agent's FCP Sales
+
+    # Get the agent's DEPP Sales
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -150,11 +344,7 @@ for item in calls_handled:
 # write them out to the template
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-
-print("\nGathering up all the orders from Big Bounce sales report.......\n")
-
 pogo_sales = get_pogo_sales(pogoSalesReportLocation(reportDate))
-
 # Team leads also submit POGO orders with text POGO ID rather than numeric ID
 # Replace the team lead text POGO agent IDs with the numeric AVAYA IDs
 for id in pogo_sales:
@@ -167,27 +357,13 @@ for id in pogo_sales:
 # Write out the number of sales to the template
 print("\nWriting out the number of sales to the template.......\n")
 for i in range(3, 50):
-    agent_id_cell = "A" + str(i)
-    agent_id = template_first_sheet[agent_id_cell].value
+    agentID_cell = "A" + str(i)
+    agentID = template_first_sheet[agentID_cell].value
     calls_handled_cell = "C" + str(i)
     calls_handled = template_first_sheet[calls_handled_cell].value
-    if(agent_id is not None and calls_handled is not None):
-        template_first_sheet["E" + str(i)].value = pogo_sales.count(agent_id)
+    if(agentID is not None and calls_handled is not None):
+        template_first_sheet["E" + str(i)].value = pogo_sales.count(agentID)
 
-# Sum up the POGO sales for each supervisor and for the whole of iQor
-for agent_id in pogo_sales:
-    if agent_id in jaelesiaTeam:
-        jaelesiaTotalSales += 1
-        totalSales += 1
-    if agent_id in tekTeam:
-        tekTotalSales += 1
-        totalSales += 1
-    if agent_id in antwonTeam:
-        antwonTotalSales += 1
-        totalSales += 1
-    if agent_id in jacksonTeam:
-        jacksonTotalSales += 1
-        totalSales += 1
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -208,26 +384,23 @@ for id in DEPP_sales:
 # Write out the products to the template
 print("\nWriting the products to the template..........\n")
 for i in range(3, 50):
-    agent_id_cell = "A" + str(i)
+    agentID_cell = "A" + str(i)
     calls_handled_cell = "C" + str(i)
-    agent_id = template_first_sheet[agent_id_cell].value
+    agentID = template_first_sheet[agentID_cell].value
     calls_handled = template_first_sheet[calls_handled_cell].value
-    if(agent_id is not None and calls_handled is not None):
-        template_first_sheet["H" + str(i)].value = DEPP_sales.count(agent_id)
+    if(agentID is not None and calls_handled is not None):
+        template_first_sheet["H" + str(i)].value = DEPP_sales.count(agentID)
 
 # Sum up the DEPP sales for each supervisor and for the whole of iQor
-for agent_id in DEPP_sales:
-    if agent_id in jaelesiaTeam:
+for agentID in DEPP_sales:
+    if agentID in jaelesiaTeam:
         jaelesiaDEPPsales += 1
         totalDEPPsales += 1
-    if agent_id in tekTeam:
+    if agentID in tekTeam:
         tekDEPPsales += 1
         totalDEPPsales += 1
-    if agent_id in antwonTeam:
+    if agentID in antwonTeam:
         antwonDEPPsales += 1
-        totalDEPPsales += 1
-    if agent_id in jacksonTeam:
-        jacksonDEPPsales += 1
         totalDEPPsales += 1
 
 # ------------------------------------------------------------------------------
@@ -244,26 +417,23 @@ fcp_sales = get_fcp_sales(fcpReportLocation(reportDate), reportDate)
 # Write out the FCP sales to the template
 print("\nWriting out the FCP sales to the template.......\n")
 for i in range(3, 50):
-    agent_id_cell = "A" + str(i)
-    agent_id = template_first_sheet[agent_id_cell].value
+    agentID_cell = "A" + str(i)
+    agentID = template_first_sheet[agentID_cell].value
     calls_handled_cell = "C" + str(i)
     calls_handled = template_first_sheet[calls_handled_cell].value
-    if(agent_id is not None and calls_handled is not None):
-        template_first_sheet["G" + str(i)].value = fcp_sales.count(agent_id)
+    if(agentID is not None and calls_handled is not None):
+        template_first_sheet["G" + str(i)].value = fcp_sales.count(agentID)
 
 # Sum up the fcp sales for each supervisor and for the whole of iQor
-for agent_id in fcp_sales:
-    if agent_id in jaelesiaTeam:
+for agentID in fcp_sales:
+    if agentID in jaelesiaTeam:
         jaelesiaFCPsales += 1
         totalFCPSales += 1
-    if agent_id in tekTeam:
+    if agentID in tekTeam:
         tekFCPsales += 1
         totalFCPSales += 1
-    if agent_id in antwonTeam:
+    if agentID in antwonTeam:
         antwonFCPsales += 1
-        totalFCPSales += 1
-    if agent_id in jacksonTeam:
-        jacksonFCPsales += 1
         totalFCPSales += 1
 
 # ------------------------------------------------------------------------------
@@ -499,27 +669,7 @@ mail.To = 'jackson.ndiho@iqor.com'
 subject = 'Program ran successfully on ' + currentDate + ' at ' + currentTime
 mail.Subject = subject
 body = 'Program ran successfully on ' + currentDate + ' at ' + currentTime
-mail.HtmlBody = (topOfTable
-                 + agentRowStart
-                 + agentIDStart + agentIDEnd
-                 + agentNameStart + agentNameEnd
-                 + callsHandledStart + callsHandledEnd
-                 + salesCallsHandledStart + salesCallsHandledEnd
-                 + bounceSalesStart + bounceSalesEnd
-                 + closeRateStartRed + closeRateEnd
-                 + FCPSalesStart + FCPSalesEnd
-                 + DEPPSalesStart + DEPPSalesEnd
-                 + agentRowEnd
-                 + agentRowStart
-                 + agentIDStart + agentIDEnd
-                 + agentNameStart + agentNameEnd
-                 + callsHandledStart + callsHandledEnd
-                 + salesCallsHandledStart + salesCallsHandledEnd
-                 + bounceSalesStart + bounceSalesEnd
-                 + closeRateStartGreen + closeRateEnd
-                 + FCPSalesStart + FCPSalesEnd
-                 + DEPPSalesStart + DEPPSalesEnd
-                 + agentRowEnd)
+mail.HtmlBody = html
 mail.send
 
 print("\nDone.......\n")
