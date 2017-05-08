@@ -2,13 +2,10 @@ import sys
 import time
 from datetime import datetime
 import win32com.client as win32
-import openpyxl
-from openpyxl.styles import Font, PatternFill
 from get_calls_handled import get_calls_handled
 from get_pogo_sales import get_pogo_sales
 from get_DEPP_sales import get_DEPP_sales
 from get_fcp_sales import get_fcp_sales
-from data_files import homeFolder
 from data_files import callsHandledReportLocation, pogoSalesReportLocation
 from data_files import fcpReportLocation, DEPPreportLocation
 from data_files import tableNames
@@ -20,14 +17,14 @@ from tableformat import agentNameStart, agentNameEnd
 from tableformat import callsHandledStart, callsHandledEnd
 from tableformat import salesCallsHandledStart, salesCallsHandledEnd
 from tableformat import bounceSalesStart, bounceSalesEnd
-from tableformat import closeRateStartRed, closeRateStartYellow, closeRateStartGreen, closeRateEnd
+from tableformat import closeRateStartRed, closeRateStartYellow, closeRateStartGreen, closeRateStartNoColor, closeRateEnd
 from tableformat import FCPSalesStart, FCPSalesEnd
 from tableformat import DEPPSalesStart, DEPPSalesEnd
 from tableformat import supRowStart, supRowEnd, grandTotalRowStart, grandTotalRowEnd
 from tableformat import supIDStart, supNameStart, supCallsHandledStart
 from tableformat import supSalesCallsHandledStart
 from tableformat import supBounceSalesStart, supCloseRateStartRed
-from tableformat import supCloseRateStartYellow, supCloseRateStartGreen
+from tableformat import supCloseRateStartYellow, supCloseRateStartGreen, supCloseRateStartNoColor
 from tableformat import supFCPSalesStart, supDEPPSalesStart
 from tableformat import gTotalIDStart, gTotalNameStart, gTotalCallsHandledStart
 from tableformat import gTotalSalesCallsHandledStart
@@ -35,18 +32,35 @@ from tableformat import gTotalBounceSalesStart, gTotalCloseRateStartRed
 from tableformat import gTotalCloseRateStartYellow, gTotalCloseRateStartGreen
 from tableformat import gTotalFCPSalesStart, gTotalDEPPSalesStart
 
+arguments = []
 
-if len(sys.argv) == 1:  # user did not pass a date argument
+for arg in sys.argv:
+    arguments.append(arg)
+arguments = arguments[1:]
+print(arguments)
+
+try:
+    int(arguments[0])
+    reportDate = arguments[0]
+    additionalEmailList = "; ".join(arguments[1:])
+except:
     reportDate = ''
-# user passed a date argument - must be in format ddmmyyyy
-elif len(sys.argv) == 2 and (len(sys.argv[1]) == 8 or sys.argv[1] == 'MTD'):
-    reportDate = sys.argv[1]
-# user passed more than one argument
-elif len(sys.argv) > 2 or (len(sys.argv) == 2 and len(sys.argv[1]) != 8):
-    print("\nInvalid argument(s). Please enter a date in format: 'ddmmyyyy'",
-          + "\n\n...exiting")
-    sys.exit(2)
-    # to do - write regex to test for invalid characters and invalid dates
+    additionalEmailList = "; ".join(arguments[0:])
+
+# if len(sys.argv) == 1:  # user did not pass a date argument
+#     reportDate = ''
+# # user passed a date argument - must be in format ddmmyyyy
+# elif len(sys.argv) == 2 and (len(sys.argv[1]) == 8 or sys.argv[1] == 'MTD'):
+#     reportDate = sys.argv[1]
+#     additionalEmailList = ""
+# elif len(sys.argv) >= 3 and (len(sys.argv[1]) == 8 or sys.argv[1] == 'MTD'):
+#     reportDate = sys.argv[1]
+#     additionalEmailList = sys.argv[2]
+# # user passed more than two arguments
+# elif len(sys.argv) > 3:
+#     print("\nToo many arguments" + "\n\n...exiting")
+#     sys.exit(2)
+#     # to do - write regex to test for invalid characters and invalid dates
 
 # Cell Background and Font Styles (to be used to conditionally format cells)
 below_goal_text = "9C0006"
@@ -66,29 +80,18 @@ agentIDs = [2062004, 2062026, 2062043, 2062034, 2062053, 2062048, 2062042,
             2062056, 2062066, 2062057, 2062065, 2062060]
 
 (jaelesiaTotalCallsHandled, tekTotalCallsHandled, antwonTotalCallsHandled,
- jacksonTotalCallsHandled, totalCallsHandled) = 0, 0, 0, 0, 0
+ totalCallsHandled) = 0, 0, 0, 0
 (jaelesiaSalesCallsHandled, tekSalesCallsHandled, antwonSalesCallsHandled,
- jacksonSalesCallsHandled, totalSalesCallsHandled) = 0, 0, 0, 0, 0
-(jaelesiaTotalSales, tekTotalSales, antwonTotalSales, jacksonTotalSales,
- totalSales) = 0, 0, 0, 0, 0
-(jaelesiaFCPsales, tekFCPsales, antwonFCPsales, jacksonFCPsales,
- totalFCPSales) = 0, 0, 0, 0, 0
-(jaelesiaNestSales, tekNestSales, antwonNestSales, jacksonNestSales,
- totalNestSales) = 0, 0, 0, 0, 0
-(jaelesiaDEPPsales, tekDEPPsales, antwonDEPPsales, jacksonDEPPsales,
- totalDEPPsales) = 0, 0, 0, 0, 0
+ totalSalesCallsHandled) = 0, 0, 0, 0
+(jaelesiaTotalSales, tekTotalSales, antwonTotalSales,
+ totalSales) = 0, 0, 0, 0
+(jaelesiaFCPsales, tekFCPsales, antwonFCPsales, totalFCPSales) = 0, 0, 0, 0
+(jaelesiaDEPPsales, tekDEPPsales, antwonDEPPsales,
+ totalDEPPsales) = 0, 0, 0, 0
 
 supervisorIDs = {"aervin": 2062007, "jnickerson": 2062001, "tlevon": 2062007,
                  "jacksonn": 2062047, "jabram": 2062017,
                  "iqr_acollins": 2062072, "jmoore": 206223, "mayala": 2062002}
-
-# Open the template file for editing:
-print("\nOpening template file for editing......\n")
-
-template = openpyxl.load_workbook(homeFolder + 'template_sales.xlsx')
-template_sheets = template.get_sheet_names()
-template_first_sheet = template.get_sheet_by_name(template_sheets[0])
-
 
 """
 agentRowStart
@@ -166,8 +169,7 @@ for agentID in pogo_sales:
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-# Gather up the FCP sales from the FCP report and
-# write them out to the template
+# Gather up the FCP sales from the FCP report
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 fcp_sales = get_fcp_sales(fcpReportLocation(reportDate), reportDate)
@@ -187,8 +189,7 @@ for agentID in fcp_sales:
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-# Gather up the DEPP sales from the Products report and
-# write them out to the template
+# Gather up the DEPP sales from the Products report
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 DEPP_sales = get_DEPP_sales(DEPPreportLocation(reportDate))
@@ -223,15 +224,16 @@ for agentRow in tableNames:
     agentID = agentRow[0]
     agentName = agentRow[1]
     callsHandled = ""
-    callsHandledInteger = 0
     salesCallsHandled = ""
     bounceSales = ""
     closeRate = ""
     FCPSales = ""
     DEPPSales = ""
+    closeRateStart = closeRateStartNoColor
+    supCloseRateStart = supCloseRateStartNoColor
 
     # This is executed if it is an agent and not a supervisor
-    if (type(agentID) == int):
+    if (type(agentID) == int):  # only agent have numeric IDs
 
         # Get the agent calls handled and sales calls handled
         for item in calls_handled:  # check each nested list
@@ -255,17 +257,23 @@ for agentRow in tableNames:
         # Get the agent Close Rate
         if (salesCallsHandled is not ""):
             if (int(salesCallsHandled) > 0):
+                print("salesCallsHandled: ", salesCallsHandled)
                 closeRate = ((bounceSalesInteger + FCPSalesInteger) /
                              salesCallsHandledInteger * 100.00)
-                print("floatcloseRate: ", closeRate)
-                print("intcloseRate: ", int(closeRate))
-                print("floatcloseRate Rounded: ", round(closeRate))
-                closeRate = str(int(round(closeRate, 0))) + "%"
+                closeRate = int(round(closeRate, 0))
+                if closeRate > 49:
+                    closeRateStart = closeRateStartGreen
+                elif closeRate > 39:
+                    closeRateStart = closeRateStartYellow
+                else:
+                    closeRateStart = closeRateStartRed
+                closeRate = str(closeRate) + "%"
 
         # Get the agent DEPP Sales
         if (callsHandled is not ""):
             DEPPSales = str(DEPP_sales.count(agentID))
 
+        # Add the HTML string for the agent row
         agentID = str(agentID)
         html += (agentRowStart
                  + agentIDStart + agentID + agentIDEnd
@@ -273,7 +281,7 @@ for agentRow in tableNames:
                  + callsHandledStart + callsHandled + callsHandledEnd
                  + salesCallsHandledStart + salesCallsHandled + salesCallsHandledEnd
                  + bounceSalesStart + bounceSales + bounceSalesEnd
-                 + closeRateStartRed + closeRate + closeRateEnd
+                 + closeRateStart + closeRate + closeRateEnd
                  + FCPSalesStart + FCPSales + FCPSalesEnd
                  + DEPPSalesStart + DEPPSales + DEPPSalesEnd
                  + agentRowEnd)
@@ -281,22 +289,76 @@ for agentRow in tableNames:
     # This is executed if it is a supervisor
     if (agentID == 'jaelesia' or agentID == 'tek' or
             agentID == 'antwon'):
-        if (agentID == 'jaelesia'):
-            callsHandled = str(int(jaelesiaTotalCallsHandled))
-            salesCallsHandled = str(int(jaelesiaSalesCallsHandled))
-            bounceSales = str(jaelesiaTotalSales)
-            DEPPSales = str(jaelesiaDEPPsales)
-        elif (agentID == 'tek'):
-            callsHandled = str(int(tekTotalCallsHandled))
-            salesCallsHandled = str(int(tekSalesCallsHandled))
-            bounceSales = str(tekTotalSales)
-            DEPPSales = str(tekDEPPsales)
-        elif (agentID == 'antwon'):
-            callsHandled = str(int(antwonTotalCallsHandled))
-            salesCallsHandled = str(int(antwonSalesCallsHandled))
-            bounceSales = str(antwonTotalSales)
-            DEPPSales = str(antwonDEPPsales)
 
+        if (agentID == 'jaelesia'):
+            callsHandled = str(int(jaelesiaTotalCallsHandled)
+                               ) if jaelesiaTotalCallsHandled else ""
+            salesCallsHandled = str(int(jaelesiaSalesCallsHandled)
+                                    ) if jaelesiaTotalCallsHandled else ""
+            bounceSales = str(jaelesiaTotalSales) if jaelesiaSalesCallsHandled else ""
+            FCPSales = str(jaelesiaFCPsales) if jaelesiaSalesCallsHandled else ""
+            DEPPSales = str(jaelesiaDEPPsales) if jaelesiaTotalCallsHandled else ""
+
+        elif (agentID == 'tek'):
+            callsHandled = str(int(tekTotalCallsHandled)) if tekTotalCallsHandled else ""
+            salesCallsHandled = str(int(tekSalesCallsHandled)) if tekTotalCallsHandled else ""
+            bounceSales = str(tekTotalSales) if tekSalesCallsHandled else ""
+            FCPSales = str(tekFCPsales) if tekSalesCallsHandled else ""
+            DEPPSales = str(tekDEPPsales) if tekTotalCallsHandled else ""
+
+        elif (agentID == 'antwon'):
+            callsHandled = str(int(antwonTotalCallsHandled)) if antwonTotalCallsHandled else ""
+            salesCallsHandled = str(int(antwonSalesCallsHandled)) if antwonTotalCallsHandled else ""
+            bounceSales = str(antwonTotalSales) if antwonSalesCallsHandled else ""
+            FCPSales = str(antwonFCPsales) if antwonSalesCallsHandled else ""
+            DEPPSales = str(antwonDEPPsales) if antwonTotalCallsHandled else ""
+
+        # Calculate Jaelesia's close rate and the colors for her cells
+        if (agentID == 'jaelesia'):
+            if (jaelesiaSalesCallsHandled is not ""):
+                if (int(jaelesiaSalesCallsHandled) > 0):
+                    closeRate = ((jaelesiaTotalSales + jaelesiaFCPsales) /
+                                 jaelesiaSalesCallsHandled * 100.00)
+                    closeRate = int(round(closeRate, 0))
+                    if closeRate >= 50:
+                        supCloseRateStart = supCloseRateStartGreen
+                    elif closeRate >= 40:
+                        supCloseRateStart = supCloseRateStartYellow
+                    else:
+                        supCloseRateStart = supCloseRateStartRed
+                    closeRate = str(closeRate) + "%"
+
+        # Calculate Tek's close rate and the colors for his cells
+        if (agentID == 'tek'):
+            if (tekSalesCallsHandled is not ""):
+                if (int(tekSalesCallsHandled) > 0):
+                    closeRate = ((tekTotalSales + tekFCPsales) /
+                                 tekSalesCallsHandled * 100.00)
+                    closeRate = int(round(closeRate, 0))
+                    if closeRate >= 50:
+                        supCloseRateStart = supCloseRateStartGreen
+                    elif closeRate >= 40:
+                        supCloseRateStart = supCloseRateStartYellow
+                    else:
+                        supCloseRateStart = supCloseRateStartRed
+                    closeRate = str(closeRate) + "%"
+
+        # Calculate Antwon's close rate and the colors for his cells
+        if (agentID == 'antwon'):
+            if (antwonSalesCallsHandled is not ""):
+                if (int(antwonSalesCallsHandled) > 0):
+                    closeRate = ((antwonTotalSales + antwonFCPsales) /
+                                 antwonSalesCallsHandled * 100.00)
+                    closeRate = int(round(closeRate, 0))
+                    if closeRate >= 50:
+                        supCloseRateStart = supCloseRateStartGreen
+                    elif closeRate >= 40:
+                        supCloseRateStart = supCloseRateStartYellow
+                    else:
+                        supCloseRateStart = supCloseRateStartRed
+                    closeRate = str(closeRate) + "%"
+
+        # Add the HTMl string for the supervisor
         agentID = "&nbsp;"
         html += (supRowStart
                  + supIDStart + agentID + agentIDEnd
@@ -304,7 +366,7 @@ for agentRow in tableNames:
                  + supCallsHandledStart + callsHandled + callsHandledEnd
                  + supSalesCallsHandledStart + salesCallsHandled + salesCallsHandledEnd
                  + supBounceSalesStart + bounceSales + bounceSalesEnd
-                 + supCloseRateStartRed + closeRate + closeRateEnd
+                 + supCloseRateStart + closeRate + closeRateEnd
                  + supFCPSalesStart + FCPSales + FCPSalesEnd
                  + supDEPPSalesStart + DEPPSales + DEPPSalesEnd
                  + supRowEnd)
@@ -314,8 +376,23 @@ for agentRow in tableNames:
         callsHandled = str(int(totalCallsHandled))
         salesCallsHandled = str(int(totalSalesCallsHandled))
         bounceSales = str(totalSales)
+        FCPSales = str(totalFCPSales)
         DEPPSales = str(totalDEPPsales)
 
+        if (totalSalesCallsHandled is not ""):
+            if (int(totalSalesCallsHandled) > 0):
+                closeRate = ((totalSales + totalFCPSales) /
+                             totalSalesCallsHandled * 100.00)
+                closeRate = int(round(closeRate, 0))
+                if closeRate >= 50:
+                    supCloseRateStart = gTotalCloseRateStartGreen
+                elif closeRate >= 40:
+                    supCloseRateStart = gTotalCloseRateStartYellow
+                else:
+                    supCloseRateStart = gTotalCloseRateStartRed
+                closeRate = str(closeRate) + "%"
+
+        # Add the HTML string for the Grand Total
         agentID = "&nbsp;"
         html += (grandTotalRowStart
                  + gTotalIDStart + agentID + agentIDEnd
@@ -330,318 +407,6 @@ for agentRow in tableNames:
 
     print(agentID, agentName, callsHandled, salesCallsHandled, closeRate)
 
-    # Get the agent's Bounce Sales
-
-    # Calculate the agent's close rate
-
-    # Get the agent's FCP Sales
-
-    # Get the agent's DEPP Sales
-
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# Gather up all the orders from the big bounce sales report and
-# write them out to the template
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-pogo_sales = get_pogo_sales(pogoSalesReportLocation(reportDate))
-# Team leads also submit POGO orders with text POGO ID rather than numeric ID
-# Replace the team lead text POGO agent IDs with the numeric AVAYA IDs
-for id in pogo_sales:
-    if (type(id) == str):
-        try:
-            pogo_sales[pogo_sales.index(id)] = supervisorIDs[id]
-        except:
-            pass
-
-# Write out the number of sales to the template
-print("\nWriting out the number of sales to the template.......\n")
-for i in range(3, 50):
-    agentID_cell = "A" + str(i)
-    agentID = template_first_sheet[agentID_cell].value
-    calls_handled_cell = "C" + str(i)
-    calls_handled = template_first_sheet[calls_handled_cell].value
-    if(agentID is not None and calls_handled is not None):
-        template_first_sheet["E" + str(i)].value = pogo_sales.count(agentID)
-
-
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# Gather up the DEPP sales from the Products report and
-# write them out to the template
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-
-DEPP_sales = get_DEPP_sales(DEPPreportLocation(reportDate))
-
-for id in DEPP_sales:
-    if (type(id) == str):
-        try:
-            DEPP_sales[DEPP_sales.index(id)] = supervisorIDs[id]
-        except:
-            pass
-
-# Write out the products to the template
-print("\nWriting the products to the template..........\n")
-for i in range(3, 50):
-    agentID_cell = "A" + str(i)
-    calls_handled_cell = "C" + str(i)
-    agentID = template_first_sheet[agentID_cell].value
-    calls_handled = template_first_sheet[calls_handled_cell].value
-    if(agentID is not None and calls_handled is not None):
-        template_first_sheet["H" + str(i)].value = DEPP_sales.count(agentID)
-
-# Sum up the DEPP sales for each supervisor and for the whole of iQor
-for agentID in DEPP_sales:
-    if agentID in jaelesiaTeam:
-        jaelesiaDEPPsales += 1
-        totalDEPPsales += 1
-    if agentID in tekTeam:
-        tekDEPPsales += 1
-        totalDEPPsales += 1
-    if agentID in antwonTeam:
-        antwonDEPPsales += 1
-        totalDEPPsales += 1
-
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# Gather up the FCP sales from the FCP report and
-# write them out to the template
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-
-print("\nOpening fcp report......\n")
-
-fcp_sales = get_fcp_sales(fcpReportLocation(reportDate), reportDate)
-
-# Write out the FCP sales to the template
-print("\nWriting out the FCP sales to the template.......\n")
-for i in range(3, 50):
-    agentID_cell = "A" + str(i)
-    agentID = template_first_sheet[agentID_cell].value
-    calls_handled_cell = "C" + str(i)
-    calls_handled = template_first_sheet[calls_handled_cell].value
-    if(agentID is not None and calls_handled is not None):
-        template_first_sheet["G" + str(i)].value = fcp_sales.count(agentID)
-
-# Sum up the fcp sales for each supervisor and for the whole of iQor
-for agentID in fcp_sales:
-    if agentID in jaelesiaTeam:
-        jaelesiaFCPsales += 1
-        totalFCPSales += 1
-    if agentID in tekTeam:
-        tekFCPsales += 1
-        totalFCPSales += 1
-    if agentID in antwonTeam:
-        antwonFCPsales += 1
-        totalFCPSales += 1
-
-# ------------------------------------------------------------------------------
-# Write out the agent close rates to the template
-# ------------------------------------------------------------------------------
-for i in range(3, 50):
-    try:
-        closeRate = ((template_first_sheet["e" + str(i)].value
-                      + template_first_sheet["g" + str(i)].value)
-                     / template_first_sheet["d" + str(i)].value)
-        template_first_sheet["f" + str(i)].value = closeRate
-        closeRateCell = template_first_sheet["f" + str(i)]
-        # print(closeRate)
-        if closeRate < 0.4:
-            closeRateCell.font = Font(name='Calibri', size=11, bold=True,
-                                      color=below_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
-        elif closeRate >= 0.5:
-            closeRateCell.font = Font(name='Calibri', size=11, bold=True,
-                                      color=at_or_above_goal_text)
-            closeRateCell.fill = PatternFill("solid",
-                                             fgColor=at_or_above_goal_bg)
-        else:
-            closeRateCell.font = Font(name='Calibri', size=11, bold=True,
-                                      color=close_to_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
-    except:
-        pass
-
-    # Write out the supervisor and iQor totals to the template
-    # Add all the fonts and the conditional color formats
-
-    closeRate = None  # Default close rate in case team has no sales calls
-
-    # First Jaelesia's team:
-    if template_first_sheet["b" + str(i)].value == "JAELESIA MOORE Total":
-        template_first_sheet["c" + str(i)].value = jaelesiaTotalCallsHandled
-        template_first_sheet["d" + str(i)].value = jaelesiaSalesCallsHandled
-        template_first_sheet["e" + str(i)].value = jaelesiaTotalSales
-        template_first_sheet["g" + str(i)].value = jaelesiaFCPsales
-        template_first_sheet["h" + str(i)].value = jaelesiaDEPPsales
-
-        try:
-            closeRate = ((template_first_sheet["e" + str(i)].value
-                          + template_first_sheet["g" + str(i)].value)
-                         / template_first_sheet["d" + str(i)].value)
-            template_first_sheet["f" + str(i)].value = closeRate
-            closeRateCell = template_first_sheet["f" + str(i)]
-        except:
-            pass
-
-        closeRateCell = template_first_sheet["f" + str(i)]
-        if closeRate is not None:
-            pass
-        elif closeRate < 0.4:
-            closeRateCell.font = Font(name='Calibri', size=13, bold=True,
-                                      color=below_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
-        elif closeRate >= 0.5:
-            closeRateCell.font = Font(name='Calibri', size=13, bold=True,
-                                      color=at_or_above_goal_text)
-            closeRateCell.fill = PatternFill("solid",
-                                             fgColor=at_or_above_goal_bg)
-        else:
-            closeRateCell.font = Font(name='Calibri', size=13, bold=True,
-                                      color=close_to_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
-
-    # Next Tek's team:
-    if template_first_sheet["b" + str(i)].value == "TEK LEVON Total":
-        template_first_sheet["c" + str(i)].value = tekTotalCallsHandled
-        template_first_sheet["d" + str(i)].value = tekSalesCallsHandled
-        template_first_sheet["e" + str(i)].value = tekTotalSales
-        template_first_sheet["g" + str(i)].value = tekFCPsales
-        template_first_sheet["h" + str(i)].value = tekDEPPsales
-
-        try:
-            closeRate = ((template_first_sheet["e" + str(i)].value
-                          + template_first_sheet["g" + str(i)].value)
-                         / template_first_sheet["d" + str(i)].value)
-            template_first_sheet["f" + str(i)].value = closeRate
-            closeRateCell = template_first_sheet["f" + str(i)]
-        except:
-            pass
-
-        closeRateCell = template_first_sheet["f" + str(i)]
-
-        if closeRate is not None:
-            pass
-        elif closeRate < 0.4:
-            closeRateCell.font = Font(name='Calibri', size=13, bold=True,
-                                      color=below_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
-        elif closeRate >= 0.5:
-            closeRateCell.font = Font(name='Calibri', size=13, bold=True,
-                                      color=at_or_above_goal_text)
-            closeRateCell.fill = PatternFill("solid",
-                                             fgColor=at_or_above_goal_bg)
-        else:
-            closeRateCell.font = Font(name='Calibri', size=13, bold=True,
-                                      color=close_to_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
-
-    # Then Antwon's team:
-    if template_first_sheet["b" + str(i)].value == "ANTWON COLLINS Total":
-        template_first_sheet["c" + str(i)].value = antwonTotalCallsHandled
-        template_first_sheet["d" + str(i)].value = antwonSalesCallsHandled
-        template_first_sheet["e" + str(i)].value = antwonTotalSales
-        template_first_sheet["g" + str(i)].value = antwonFCPsales
-        template_first_sheet["h" + str(i)].value = antwonDEPPsales
-
-        try:
-            closeRate = ((template_first_sheet["e" + str(i)].value
-                          + template_first_sheet["g" + str(i)].value)
-                         / template_first_sheet["d" + str(i)].value)
-            template_first_sheet["f" + str(i)].value = closeRate
-            closeRateCell = template_first_sheet["f" + str(i)]
-        except:
-            pass
-
-        closeRateCell = template_first_sheet["f" + str(i)]
-
-        if closeRate is not None:
-            pass
-        elif closeRate < 0.4:
-            closeRateCell.font = Font(name='Calibri', size=13,
-                                      bold=True, color=below_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
-        elif closeRate >= 0.5:
-            closeRateCell.font = Font(name='Calibri', size=13, bold=True,
-                                      color=at_or_above_goal_text)
-            closeRateCell.fill = PatternFill("solid",
-                                             fgColor=at_or_above_goal_bg)
-        else:
-            closeRateCell.font = Font(name='Calibri', size=13,
-                                      bold=True, color=close_to_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
-
-    # Finally Jackson's team:
-    if template_first_sheet["b" + str(i)].value == "JACKSON NDIHO Total":
-        template_first_sheet["c" + str(i)].value = jacksonTotalCallsHandled
-
-        template_first_sheet["d" + str(i)].value = jacksonSalesCallsHandled
-        template_first_sheet["e" + str(i)].value = jacksonTotalSales
-        template_first_sheet["g" + str(i)].value = jacksonFCPsales
-        template_first_sheet["h" + str(i)].value = jacksonDEPPsales
-
-        try:
-            closeRate = ((template_first_sheet["e" + str(i)].value
-                          + template_first_sheet["g" + str(i)].value)
-                         / template_first_sheet["d" + str(i)].value)
-            template_first_sheet["f" + str(i)].value = closeRate
-            closeRateCell = template_first_sheet["f" + str(i)]
-        except:
-            pass
-
-        closeRateCell = template_first_sheet["f" + str(i)]
-
-        if closeRate is not None:
-            pass
-        elif closeRate < 0.4:
-            closeRateCell.font = Font(name='Calibri', size=13,
-                                      bold=True, color=below_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
-        elif closeRate >= 0.5:
-            closeRateCell.font = Font(name='Calibri', size=13, bold=True,
-                                      color=at_or_above_goal_text)
-            closeRateCell.fill = PatternFill("solid",
-                                             fgColor=at_or_above_goal_bg)
-        else:
-            closeRateCell.font = Font(name='Calibri', size=13,
-                                      bold=True, color=close_to_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
-
-    if template_first_sheet["b" + str(i)].value == "Grand Total":
-        template_first_sheet["c" + str(i)].value = totalCallsHandled
-        template_first_sheet["d" + str(i)].value = totalSalesCallsHandled
-        template_first_sheet["e" + str(i)].value = totalSales
-        template_first_sheet["g" + str(i)].value = totalFCPSales
-        template_first_sheet["h" + str(i)].value = totalDEPPsales
-
-        try:
-            closeRate = ((template_first_sheet["e" + str(i)].value
-                          + template_first_sheet["g" + str(i)].value)
-                         / template_first_sheet["d" + str(i)].value)
-            template_first_sheet["f" + str(i)].value = closeRate
-            closeRateCell = template_first_sheet["f" + str(i)]
-        except:
-            pass
-
-        closeRateCell = template_first_sheet["f" + str(i)]
-
-        if closeRate is not None:
-            pass
-        elif closeRate < 0.4:
-            closeRateCell.font = Font(name='Calibri', size=13,
-                                      bold=True, color=below_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=below_goal_bg)
-        elif closeRate >= 0.5:
-            closeRateCell.font = Font(name='Calibri', size=13, bold=True,
-                                      color=at_or_above_goal_text)
-            closeRateCell.fill = PatternFill("solid",
-                                             fgColor=at_or_above_goal_bg)
-        else:
-            closeRateCell.font = Font(name='Calibri', size=13,
-                                      bold=True, color=close_to_goal_text)
-            closeRateCell.fill = PatternFill("solid", fgColor=close_to_goal_bg)
-
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # We are done! - Save the template as final.xlsx
@@ -653,19 +418,12 @@ finalReportName = 'SalesReport'
 currentDate = datetime.now().strftime("%m%d%Y")
 currentTime = time.strftime("%I%M%S%p")
 
-if len(sys.argv) == 1:  # user did not pass a date argument
-    template.save(homeFolder + finalReportName + "_" + currentDate
-                  + "_" + currentTime + ".xlsx")
-elif len(sys.argv) == 2:
-    template.save(homeFolder + '\\' + reportDate + '\\' + finalReportName +
-                  "_" + reportDate + "_" + currentTime + ".xlsx")
-
 # ------------------------------------------------------------------------------
 # send email
 # ------------------------------------------------------------------------------
 outlook = win32.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
-mail.To = 'jackson.ndiho@iqor.com'
+mail.To = 'jackson.ndiho@iqor.com; ' + additionalEmailList
 subject = 'Program ran successfully on ' + currentDate + ' at ' + currentTime
 mail.Subject = subject
 body = 'Program ran successfully on ' + currentDate + ' at ' + currentTime
