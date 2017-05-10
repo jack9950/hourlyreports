@@ -37,30 +37,12 @@ arguments = []
 for arg in sys.argv:
     arguments.append(arg)
 arguments = arguments[1:]
-print(arguments)
 
 try:
     int(arguments[0])
     reportDate = arguments[0]
-    additionalEmailList = "; ".join(arguments[1:])
 except:
     reportDate = ''
-    additionalEmailList = "; ".join(arguments[0:])
-
-# if len(sys.argv) == 1:  # user did not pass a date argument
-#     reportDate = ''
-# # user passed a date argument - must be in format ddmmyyyy
-# elif len(sys.argv) == 2 and (len(sys.argv[1]) == 8 or sys.argv[1] == 'MTD'):
-#     reportDate = sys.argv[1]
-#     additionalEmailList = ""
-# elif len(sys.argv) >= 3 and (len(sys.argv[1]) == 8 or sys.argv[1] == 'MTD'):
-#     reportDate = sys.argv[1]
-#     additionalEmailList = sys.argv[2]
-# # user passed more than two arguments
-# elif len(sys.argv) > 3:
-#     print("\nToo many arguments" + "\n\n...exiting")
-#     sys.exit(2)
-#     # to do - write regex to test for invalid characters and invalid dates
 
 # Cell Background and Font Styles (to be used to conditionally format cells)
 below_goal_text = "9C0006"
@@ -257,7 +239,6 @@ for agentRow in tableNames:
         # Get the agent Close Rate
         if (salesCallsHandled is not ""):
             if (int(salesCallsHandled) > 0):
-                print("salesCallsHandled: ", salesCallsHandled)
                 closeRate = ((bounceSalesInteger + FCPSalesInteger) /
                              salesCallsHandledInteger * 100.00)
                 closeRate = int(round(closeRate, 0))
@@ -405,29 +386,42 @@ for agentRow in tableNames:
                  + gTotalDEPPSalesStart + DEPPSales + DEPPSalesEnd
                  + grandTotalRowEnd)
 
-    print(agentID, agentName, callsHandled, salesCallsHandled, closeRate)
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # We are done! - Save the template as final.xlsx
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-print("\nSaving final template.......")
+
 
 finalReportName = 'SalesReport'
-currentDate = datetime.now().strftime("%m%d%Y")
-currentTime = time.strftime("%I%M%S%p")
+
 
 # ------------------------------------------------------------------------------
 # send email
 # ------------------------------------------------------------------------------
 outlook = win32.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
-mail.To = 'jackson.ndiho@iqor.com; ' + additionalEmailList
-subject = 'Program ran successfully on ' + currentDate + ' at ' + currentTime
+
+currentDate = datetime.now().strftime("%m-%d-%y")
+currentTime = time.strftime("%#I:%M %p")
+
+try:
+    int(arguments[0])
+    reportDate = arguments[0]
+    reportDate = reportDate[0:2] + '-' + reportDate[2:4] + '-' + reportDate[6:]
+    subject = 'iQor Sales Report ' + reportDate + ' End of Business'
+    additionalEmailList = "; ".join(arguments[1:])
+
+except:
+    reportDate = ''
+    subject = 'iQor Sales Update ' + currentDate + ' ' + currentTime
+    additionalEmailList = "; ".join(arguments[0:])
+
+mail.To = additionalEmailList + '; jackson.ndiho@iqor.com'
+
 mail.Subject = subject
-body = 'Program ran successfully on ' + currentDate + ' at ' + currentTime
 mail.HtmlBody = html
 mail.send
 
-print("\nDone.......\n")
+print("\nEmail sent to" + additionalEmailList + "; jackson.ndiho@iqor.com.\n\nDone.......")
