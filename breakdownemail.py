@@ -1,6 +1,6 @@
 import sys
 import time
-from datetime import datetime, date
+from datetime import datetime
 import itertools
 import win32com.client as win32
 import openpyxl
@@ -14,8 +14,16 @@ from data_files import fcpReportLocation, DEPPreportLocation
 from breakdownTableFormat import emailStartHtml, emailEndHtml
 from breakdownTableFormat import rowOpenTag, rowCloseTag
 from breakdownTableFormat import salesDEPPTableOpenTag, FCPTableOpenTag
-from breakdownTableFormat import tableCloseTag
+from breakdownTableFormat import tableCloseTag, tableGutter, fcpTableGutter
 from breakdownTableFormat import agentNameOpenTag, agentNameCloseTag
+from breakdownTableFormat import acctNumOpenTag, acctNumCloseTag
+from breakdownTableFormat import orderNumOpenTag, orderNumCloseTag
+from breakdownTableFormat import orderStatusOpenTag, orderStatusCloseTag
+from breakdownTableFormat import DEPPNameOpenTag, DEPPNameCloseTag
+from breakdownTableFormat import fcpAgentNameOpenTag, fcpAgentNameCloseTag
+from breakdownTableFormat import fcpAcctNumOneOpenTag, fcpAcctNumOneCloseTag
+from breakdownTableFormat import fcpAcctNumTwoOpenTag, fcpAcctNumTwoCloseTag
+from breakdownTableFormat import fcpOrderStatusOpenTag, fcpOrderStatusCloseTag
 
 arguments = []
 
@@ -40,7 +48,7 @@ template_second_sheet = template.get_sheet_by_name(template_sheets[1])
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-#
+# Bounce and DEPP Sales
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
@@ -60,95 +68,122 @@ bounce_sales.sort()  # Sort alphabetically by agent name
 DEPP_sales = get_DEPP_sales_breakdown(DEPPreportLocation(reportDate))
 DEPP_sales.sort()
 
+rowData = itertools.zip_longest(bounce_sales, DEPP_sales, fillvalue=[])
 
-rowData = itertools.zip_longest(bounce_sales, DEPP_sales, fillvalue='')
-
-print(rowData)
+# print("bounce_sales before zip: ")
+# for item in bounce_sales:
+#     print(item)
+#
+# print("\n\nDEPP_sales before zip: ")
+# for item in DEPP_sales:
+#     print(item)
+#
+# print("\n\nROW DATA ZIPPED: ")
+# for item in rowData:
+#     print(item, "\n")
 
 html = emailStartHtml + salesDEPPTableOpenTag
 
 row = firstRow  # first row to start adding agent sales is row 4
-for bounce_sale in bounce_sales:
-    agentName = bounce_sale[0]
-    accountNumber = bounce_sale[1]
-    orderNumber = bounce_sale[2]
-    orderStatus = bounce_sale[3]
+for row in rowData:
+    # format will be [bounce_sale, DEPP_sales]
+    # an empty [] means that it is a partially blank row, and
+    # one of the two, bounce_sales or DEPP_sales has more rows than the other
+    # we will test for this unevenness by checking the length
+    bounceSale = row[0]
+    # print("bounceSale: ", bounceSale)
+    DEPPSale = row[1]
+    if len(bounceSale) > 0:
+        agentName1 = bounceSale[0]
+        accountNumber1 = str(int(bounceSale[1]))
+        orderNumber1 = str(int(bounceSale[2]))
+        orderStatus1 = bounceSale[3]
+    else:
+        agentName1 = ''
+        accountNumber1 = ''
+        orderNumber1 = ''
+        orderStatus1 = ''
 
-    html += (rowOpenTag + agentNameOpenTag + agentName + agentNameCloseTag
+    if len(DEPPSale) > 0:
+        agentName2 = DEPPSale[0]
+        accountNumber2 = str(int(DEPPSale[1]))
+        orderNumber2 = str(int(DEPPSale[2]))
+        DEPPName = DEPPSale[3]
+        orderStatus2 = DEPPSale[4]
+    else:
+        agentName2 = ''
+        accountNumber2 = ''
+        orderNumber2 = ''
+        DEPPName = ''
+        orderStatus2 = ''
+
+    html += (rowOpenTag
+             + agentNameOpenTag + agentName1 + agentNameCloseTag
+             + acctNumOpenTag + accountNumber1 + acctNumCloseTag
+             + orderNumOpenTag + orderNumber1 + orderNumCloseTag
+             + orderStatusOpenTag + orderStatus1 + orderStatusCloseTag
+             + tableGutter
+             + agentNameOpenTag + agentName2 + agentNameCloseTag
+             + acctNumOpenTag + accountNumber2 + acctNumCloseTag
+             + orderNumOpenTag + orderNumber2 + orderNumCloseTag
+             + DEPPNameOpenTag + DEPPName + DEPPNameCloseTag
+             + orderStatusOpenTag + orderStatus2 + orderStatusCloseTag
              + rowCloseTag)
-
-    row += 1
 
 html += tableCloseTag
 
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# Next the DEPP Sales
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-
-# show the date at the top of the sheet
-# template_first_sheet["F2"] = currentDate
-
-DEPP_sales = get_DEPP_sales_breakdown(DEPPreportLocation(reportDate))
-DEPP_sales.sort()
-
-row = firstRow  # first row to start adding agent sales is row 4
-for DEPP_sale in DEPP_sales:
-    template_first_sheet["F" + str(row)].value = DEPP_sale[0]
-    template_first_sheet["G" + str(row)].value = DEPP_sale[1]
-    template_first_sheet["H" + str(row)].value = DEPP_sale[2]
-    template_first_sheet["I" + str(row)].value = DEPP_sale[3]
-    template_first_sheet["J" + str(row)].value = DEPP_sale[4]
-    template_first_sheet["F" + str(row)].alignment = left_alignment
-    template_first_sheet["G" + str(row)].alignment = left_alignment
-    template_first_sheet["H" + str(row)].alignment = left_alignment
-    template_first_sheet["I" + str(row)].alignment = left_alignment
-    template_first_sheet["J" + str(row)].alignment = left_alignment
-    row += 1
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-# Next FCP Sales
+# Next FCP Sales and Opportunities
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-# show the date at the top of the sheet
-# template_second_sheet["A2"] = currentDate
+html += FCPTableOpenTag
 
 fcp_sales = get_fcp_sales_breakdown(fcpReportLocation(reportDate), reportDate)
 fcp_sales.sort()
-
-row = firstRow  # first row to start adding agent sales is row 4
-for fcp_sale in fcp_sales:
-    template_second_sheet["A" + str(row)].value = fcp_sale[0]
-    template_second_sheet["B" + str(row)].value = fcp_sale[1]
-    template_second_sheet["A" + str(row)].alignment = left_alignment
-    template_second_sheet["B" + str(row)].alignment = left_alignment
-    row += 1
-
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# Finally FCP Opportunites
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-
-# show the date at the top of the sheet
-# template_second_sheet["D2"] = currentDate
 
 fcp_opportunities = get_fcp_opportunities_breakdown(
     pogoSalesReportLocation(reportDate))
 fcp_opportunities.sort()
 
-row = firstRow  # first row to start adding agent sales is row 4
-for fcp_opportunity in fcp_opportunities:
-    template_second_sheet["D" + str(row)].value = fcp_opportunity[0]
-    template_second_sheet["E" + str(row)].value = fcp_opportunity[1]
-    template_second_sheet["F" + str(row)].value = fcp_opportunity[2]
-    template_second_sheet["D" + str(row)].alignment = left_alignment
-    template_second_sheet["E" + str(row)].alignment = left_alignment
-    template_second_sheet["F" + str(row)].alignment = left_alignment
-    row += 1
+rowData = itertools.zip_longest(fcp_sales, fcp_opportunities, fillvalue=[])
+
+for row in rowData:
+    # format will be [fcp_sale, fcp_opportunity]
+    # an empty [] means that it is a partially blank row, and
+    # one of the two, fcp_sale or fcp_opportunity has more rows than the other
+    # we will test for this unevenness by checking the length
+    fcpSale = row[0]
+    # print("bounceSale: ", bounceSale)
+    fcpOpportunity = row[1]
+    if len(fcpSale) > 0:
+        agentName1 = fcpSale[0]
+        accountNumber1 = str(int(fcpSale[1]))
+    else:
+        agentName1 = ''
+        accountNumber1 = ''
+
+    if len(fcpOpportunity) > 0:
+        agentName2 = fcpOpportunity[0]
+        accountNumber2 = str(int(fcpOpportunity[1]))
+        orderStatus2 = fcpOpportunity[2]
+    else:
+        agentName2 = ''
+        accountNumber2 = ''
+        orderStatus2 = ''
+
+    html += (rowOpenTag
+             + fcpAgentNameOpenTag + agentName1 + fcpAgentNameCloseTag
+             + fcpAcctNumOneOpenTag + accountNumber1 + fcpAcctNumOneCloseTag
+             + fcpTableGutter
+             + fcpAgentNameOpenTag + agentName2 + fcpAgentNameCloseTag
+             + fcpAcctNumTwoOpenTag + accountNumber2 + fcpAcctNumTwoCloseTag
+             + fcpOrderStatusOpenTag + orderStatus2 + fcpOrderStatusCloseTag
+             + rowCloseTag)
+
+html += tableCloseTag + emailEndHtml
 
 # ------------------------------------------------------------------------------
 # send email
@@ -172,9 +207,8 @@ except:
     additionalEmailList = "; ".join(arguments[0:])
 
 mail.To = additionalEmailList + '; jackson.ndiho@iqor.com'
-html += emailEndHtml
 mail.Subject = subject
-mail.HtmlBody = html
+mail.HtmlBody = subject + ":" + html
 mail.send
 
 print("\nEmail sent to: " + additionalEmailList + "; jackson.ndiho@iqor.com.\n\nDone.......")

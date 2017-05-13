@@ -408,9 +408,8 @@ except:
     additionalEmailList = "; ".join(arguments[0:])
 
 mail.To = additionalEmailList + '; jackson.ndiho@iqor.com'
-
 mail.Subject = subject
-mail.HtmlBody = html
+mail.HtmlBody = subject + ":" + html
 mail.send
 
 print("\nEmail sent to: " + additionalEmailList + "; jackson.ndiho@iqor.com.\n\nDone.......")
