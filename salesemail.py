@@ -1,7 +1,9 @@
 import sys
 import time
 from datetime import datetime
+
 import win32com.client as win32
+
 from get_calls_handled import get_calls_handled
 from get_pogo_sales import get_pogo_sales
 from get_DEPP_sales import get_DEPP_sales
@@ -9,7 +11,7 @@ from get_fcp_sales import get_fcp_sales
 from data_files import callsHandledReportLocation, pogoSalesReportLocation
 from data_files import fcpReportLocation, DEPPreportLocation
 from data_files import tableNames
-from data_files import jaelesiaTeam, tekTeam, antwonTeam
+from data_files import jaelesiaTeam, tekTeam, antwonTeam, jacksonTeam
 from tableformat import topOfTable
 from tableformat import agentRowStart, agentRowEnd
 from tableformat import agentIDStart, agentIDEnd
@@ -17,14 +19,17 @@ from tableformat import agentNameStart, agentNameEnd
 from tableformat import callsHandledStart, callsHandledEnd
 from tableformat import salesCallsHandledStart, salesCallsHandledEnd
 from tableformat import bounceSalesStart, bounceSalesEnd
-from tableformat import closeRateStartRed, closeRateStartYellow, closeRateStartGreen, closeRateStartNoColor, closeRateEnd
-from tableformat import FCPSalesStart, FCPSalesEnd
+from tableformat import closeRateStartRed, closeRateStartYellow
+from tableformat import closeRateStartGreen, closeRateStartNoColor
+from tableformat import closeRateEnd, FCPSalesStart, FCPSalesEnd
 from tableformat import DEPPSalesStart, DEPPSalesEnd
-from tableformat import supRowStart, supRowEnd, grandTotalRowStart, grandTotalRowEnd
+from tableformat import supRowStart, supRowEnd
+from tableformat import grandTotalRowStart, grandTotalRowEnd
 from tableformat import supIDStart, supNameStart, supCallsHandledStart
 from tableformat import supSalesCallsHandledStart
 from tableformat import supBounceSalesStart, supCloseRateStartRed
-from tableformat import supCloseRateStartYellow, supCloseRateStartGreen, supCloseRateStartNoColor
+from tableformat import supCloseRateStartYellow, supCloseRateStartGreen
+from tableformat import supCloseRateStartNoColor
 from tableformat import supFCPSalesStart, supDEPPSalesStart
 from tableformat import gTotalIDStart, gTotalNameStart, gTotalCallsHandledStart
 from tableformat import gTotalSalesCallsHandledStart
@@ -52,42 +57,19 @@ close_to_goal_bg = "FFEB9C"
 at_or_above_goal_text = "006100"
 at_or_above_goal_bg = "C6EFCE"
 
-
-agentIDs = [2062004, 2062026, 2062043, 2062034, 2062053, 2062048, 2062042,
-            2062011, 2062030, 2062045, 2062046, 2062016, 2062001, 2062036,
-            2062039, 2062025, 2062041, 2062052, 2062037, 2062024, 2062049,
-            2062031, 2062044, 2062003, 2062028, 2062022, 2062051, 2062021,
-            2062035, 2062007, 2062020, 2062015, 2062040, 2062010, 2062018,
-            2062054, 2062032, 2062033, 2062062, 2062070, 2062067, 2062058,
-            2062056, 2062066, 2062057, 2062065, 2062060]
-
-(jaelesiaTotalCallsHandled, tekTotalCallsHandled, antwonTotalCallsHandled,
- totalCallsHandled) = 0, 0, 0, 0
-(jaelesiaSalesCallsHandled, tekSalesCallsHandled, antwonSalesCallsHandled,
- totalSalesCallsHandled) = 0, 0, 0, 0
-(jaelesiaTotalSales, tekTotalSales, antwonTotalSales,
- totalSales) = 0, 0, 0, 0
-(jaelesiaFCPsales, tekFCPsales, antwonFCPsales, totalFCPSales) = 0, 0, 0, 0
-(jaelesiaDEPPsales, tekDEPPsales, antwonDEPPsales,
- totalDEPPsales) = 0, 0, 0, 0
+(jaelesiaTotalCallsHandled, tekTotalCallsHandled, antwonTotalCallsHandled, jacksonTotalCallsHandled,
+ totalCallsHandled) = 0, 0, 0, 0, 0
+(jaelesiaSalesCallsHandled, tekSalesCallsHandled, antwonSalesCallsHandled, jacksonSalesCallsHandled,
+ totalSalesCallsHandled) = 0, 0, 0, 0, 0
+(jaelesiaTotalSales, tekTotalSales, antwonTotalSales, jacksonTotalSales,
+ totalSales) = 0, 0, 0, 0, 0
+(jaelesiaFCPsales, tekFCPsales, antwonFCPsales, jacksonFCPsales, totalFCPSales) = 0, 0, 0, 0, 0
+(jaelesiaDEPPsales, tekDEPPsales, antwonDEPPsales, jacksonDEPPsales,
+ totalDEPPsales) = 0, 0, 0, 0, 0
 
 supervisorIDs = {"aervin": 2062007, "jnickerson": 2062001, "tlevon": 2062007,
                  "jacksonn": 2062047, "jabram": 2062017,
                  "iqr_acollins": 2062072, "jmoore": 206223, "mayala": 2062002}
-
-"""
-agentRowStart
-+ agentIDStart + agentID + agentIDEnd
-+ agentNameStart + agentName + agentNameEnd
-+ callsHandledStart + callsHandled + callsHandledEnd
-+ salesCallsHandledStart + salesCallsHandled + salesCallsHandledEnd
-+ bounceSalesStart + bounceSales + bounceSalesEnd
-+ closeRateStartRed + closeRate + closeRateEnd
-+ FCPSalesStart + FCPSales + FCPSalesEnd
-+ DEPPSalesStart + DEPPSales + DEPPSalesEnd
-+ agentRowEnd
-
-"""
 
 html = topOfTable
 
@@ -119,6 +101,12 @@ for item in calls_handled:
         antwonSalesCallsHandled += item[2]
         totalCallsHandled += item[1]
         totalSalesCallsHandled += item[2]
+    if agentID in jacksonTeam:
+        jacksonTotalCallsHandled += item[1]
+        jacksonSalesCallsHandled += item[2]
+        totalCallsHandled += item[1]
+        totalSalesCallsHandled += item[2]
+
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -147,6 +135,9 @@ for agentID in pogo_sales:
     if agentID in antwonTeam:
         antwonTotalSales += 1
         totalSales += 1
+    if agentID in jacksonTeam:
+        jacksonTotalSales += 1
+        totalSales += 1
 
 
 # ------------------------------------------------------------------------------
@@ -167,6 +158,9 @@ for agentID in fcp_sales:
     if agentID in antwonTeam:
         antwonFCPsales += 1
         totalFCPSales += 1
+    if agentID in jacksonTeam:
+        jacksonFCPsales += 1
+        totalFCPSales += 1
 
 
 # ------------------------------------------------------------------------------
@@ -186,13 +180,16 @@ for id in DEPP_sales:
 # Sum up the DEPP sales for each supervisor and for the whole of iQor
 for agentID in DEPP_sales:
     if agentID in jaelesiaTeam:
-        jaelesiaDEPPsales += 1
-        totalDEPPsales += 1
+        jaelesiaDEPPsales += 1  
+        totalDEPPsales += 1      
     if agentID in tekTeam:
         tekDEPPsales += 1
         totalDEPPsales += 1
     if agentID in antwonTeam:
         antwonDEPPsales += 1
+        totalDEPPsales += 1
+    if agentID in jacksonTeam:
+        jacksonDEPPsales += 1
         totalDEPPsales += 1
 
 
@@ -260,7 +257,8 @@ for agentRow in tableNames:
                  + agentIDStart + agentID + agentIDEnd
                  + agentNameStart + agentName + agentNameEnd
                  + callsHandledStart + callsHandled + callsHandledEnd
-                 + salesCallsHandledStart + salesCallsHandled + salesCallsHandledEnd
+                 + salesCallsHandledStart + salesCallsHandled
+                 + salesCallsHandledEnd
                  + bounceSalesStart + bounceSales + bounceSalesEnd
                  + closeRateStart + closeRate + closeRateEnd
                  + FCPSalesStart + FCPSales + FCPSalesEnd
@@ -269,30 +267,48 @@ for agentRow in tableNames:
 
     # This is executed if it is a supervisor
     if (agentID == 'jaelesia' or agentID == 'tek' or
-            agentID == 'antwon'):
+            agentID == 'antwon' or agentID == 'jackson'):
 
         if (agentID == 'jaelesia'):
             callsHandled = str(int(jaelesiaTotalCallsHandled)
                                ) if jaelesiaTotalCallsHandled else ""
             salesCallsHandled = str(int(jaelesiaSalesCallsHandled)
                                     ) if jaelesiaTotalCallsHandled else ""
-            bounceSales = str(jaelesiaTotalSales) if jaelesiaSalesCallsHandled else ""
-            FCPSales = str(jaelesiaFCPsales) if jaelesiaSalesCallsHandled else ""
-            DEPPSales = str(jaelesiaDEPPsales) if jaelesiaTotalCallsHandled else ""
+            bounceSales = (str(jaelesiaTotalSales)
+                           if jaelesiaSalesCallsHandled >= 0 else "")
+            FCPSales = (str(jaelesiaFCPsales)
+                        if jaelesiaSalesCallsHandled >= 0 else "")
+            DEPPSales = (str(jaelesiaDEPPsales)
+                         if jaelesiaTotalCallsHandled >= 0 else "")
 
         elif (agentID == 'tek'):
-            callsHandled = str(int(tekTotalCallsHandled)) if tekTotalCallsHandled else ""
-            salesCallsHandled = str(int(tekSalesCallsHandled)) if tekTotalCallsHandled else ""
-            bounceSales = str(tekTotalSales) if tekSalesCallsHandled else ""
-            FCPSales = str(tekFCPsales) if tekSalesCallsHandled else ""
-            DEPPSales = str(tekDEPPsales) if tekTotalCallsHandled else ""
+            callsHandled = (str(int(tekTotalCallsHandled))
+                            if tekTotalCallsHandled else "")
+            salesCallsHandled = (str(int(tekSalesCallsHandled))
+                                 if tekTotalCallsHandled else "")
+            bounceSales = str(tekTotalSales) if tekSalesCallsHandled >= 0 else ""
+            FCPSales = str(tekFCPsales) if tekSalesCallsHandled >= 0 else ""
+            DEPPSales = str(tekDEPPsales) if tekTotalCallsHandled >= 0 else ""
 
         elif (agentID == 'antwon'):
-            callsHandled = str(int(antwonTotalCallsHandled)) if antwonTotalCallsHandled else ""
-            salesCallsHandled = str(int(antwonSalesCallsHandled)) if antwonTotalCallsHandled else ""
-            bounceSales = str(antwonTotalSales) if antwonSalesCallsHandled else ""
-            FCPSales = str(antwonFCPsales) if antwonSalesCallsHandled else ""
-            DEPPSales = str(antwonDEPPsales) if antwonTotalCallsHandled else ""
+            callsHandled = (str(int(antwonTotalCallsHandled))
+                            if antwonTotalCallsHandled else "")
+            salesCallsHandled = (str(int(antwonSalesCallsHandled))
+                                 if antwonTotalCallsHandled else "")
+            bounceSales = (str(antwonTotalSales)
+                           if antwonSalesCallsHandled >= 0 else "")
+            FCPSales = str(antwonFCPsales) if antwonSalesCallsHandled >= 0 else ""
+            DEPPSales = str(antwonDEPPsales) if antwonTotalCallsHandled >= 0 else ""
+
+        elif (agentID == 'jackson'):
+            callsHandled = (str(int(jacksonTotalCallsHandled))
+                            if jacksonTotalCallsHandled else "")
+            salesCallsHandled = (str(int(jacksonSalesCallsHandled))
+                                 if jacksonTotalCallsHandled else "")
+            bounceSales = (str(jacksonTotalSales)
+                           if jacksonSalesCallsHandled >= 0 else "")
+            FCPSales = str(jacksonFCPsales) if jacksonSalesCallsHandled  >= 0 else ""
+            DEPPSales = str(jacksonDEPPsales) if jacksonTotalCallsHandled >= 0 else ""
 
         # Calculate Jaelesia's close rate and the colors for her cells
         if (agentID == 'jaelesia'):
@@ -339,13 +355,28 @@ for agentRow in tableNames:
                         supCloseRateStart = supCloseRateStartRed
                     closeRate = str(closeRate) + "%"
 
+        if (agentID == 'jackson'):
+            if (jacksonSalesCallsHandled is not ""):
+                if (int(jacksonSalesCallsHandled) > 0):
+                    closeRate = ((jacksonTotalSales + jacksonFCPsales) /
+                                 jacksonSalesCallsHandled * 100.00)
+                    closeRate = int(round(closeRate, 0))
+                    if closeRate >= 50:
+                        supCloseRateStart = supCloseRateStartGreen
+                    elif closeRate >= 40:
+                        supCloseRateStart = supCloseRateStartYellow
+                    else:
+                        supCloseRateStart = supCloseRateStartRed
+                    closeRate = str(closeRate) + "%"
+
         # Add the HTMl string for the supervisor
         agentID = "&nbsp;"
         html += (supRowStart
                  + supIDStart + agentID + agentIDEnd
                  + supNameStart + agentName + agentNameEnd
                  + supCallsHandledStart + callsHandled + callsHandledEnd
-                 + supSalesCallsHandledStart + salesCallsHandled + salesCallsHandledEnd
+                 + supSalesCallsHandledStart + salesCallsHandled
+                 + salesCallsHandledEnd
                  + supBounceSalesStart + bounceSales + bounceSalesEnd
                  + supCloseRateStart + closeRate + closeRateEnd
                  + supFCPSalesStart + FCPSales + FCPSalesEnd
@@ -379,7 +410,8 @@ for agentRow in tableNames:
                  + gTotalIDStart + agentID + agentIDEnd
                  + gTotalNameStart + agentName + agentNameEnd
                  + gTotalCallsHandledStart + callsHandled + callsHandledEnd
-                 + gTotalSalesCallsHandledStart + salesCallsHandled + salesCallsHandledEnd
+                 + gTotalSalesCallsHandledStart + salesCallsHandled
+                 + salesCallsHandledEnd
                  + gTotalBounceSalesStart + bounceSales + bounceSalesEnd
                  + supCloseRateStart + closeRate + closeRateEnd
                  + gTotalFCPSalesStart + FCPSales + FCPSalesEnd
@@ -412,4 +444,5 @@ mail.Subject = subject
 mail.HtmlBody = subject + ":" + html
 mail.send
 
-print("\nEmail sent to: " + additionalEmailList + "; jackson.ndiho@iqor.com.\n\nDone.......")
+print("\niQor Sales email sent to: " + additionalEmailList
+      + "; jackson.ndiho@iqor.com.\n\nDone.......")

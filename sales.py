@@ -1,7 +1,6 @@
 import sys
 import time
 from datetime import datetime
-import win32com.client as win32
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 from get_calls_handled import get_calls_handled
@@ -11,17 +10,6 @@ from get_fcp_sales import get_fcp_sales
 from data_files import homeFolder
 from data_files import callsHandledReportLocation, pogoSalesReportLocation
 from data_files import fcpReportLocation, DEPPreportLocation
-from tableformat import topOfTable
-from tableformat import agentRowStart, agentRowEnd
-from tableformat import agentIDStart, agentIDEnd
-from tableformat import agentNameStart, agentNameEnd
-from tableformat import callsHandledStart, callsHandledEnd
-from tableformat import salesCallsHandledStart, salesCallsHandledEnd
-from tableformat import bounceSalesStart, bounceSalesEnd
-from tableformat import closeRateStartRed, closeRateStartYellow, closeRateStartGreen, closeRateEnd
-from tableformat import FCPSalesStart, FCPSalesEnd
-from tableformat import DEPPSalesStart, DEPPSalesEnd
-
 
 if len(sys.argv) == 1:  # user did not pass a date argument
     reportDate = ''
@@ -489,37 +477,5 @@ if len(sys.argv) == 1:  # user did not pass a date argument
 elif len(sys.argv) == 2:
     template.save(homeFolder + '\\' + reportDate + '\\' + finalReportName +
                   "_" + reportDate + "_" + currentTime + ".xlsx")
-
-# ------------------------------------------------------------------------------
-# send email
-# ------------------------------------------------------------------------------
-outlook = win32.Dispatch('outlook.application')
-mail = outlook.CreateItem(0)
-mail.To = 'jackson.ndiho@iqor.com'
-subject = 'Program ran successfully on ' + currentDate + ' at ' + currentTime
-mail.Subject = subject
-body = 'Program ran successfully on ' + currentDate + ' at ' + currentTime
-mail.HtmlBody = (topOfTable
-                 + agentRowStart
-                 + agentIDStart + agentIDEnd
-                 + agentNameStart + agentNameEnd
-                 + callsHandledStart + callsHandledEnd
-                 + salesCallsHandledStart + salesCallsHandledEnd
-                 + bounceSalesStart + bounceSalesEnd
-                 + closeRateStartRed + closeRateEnd
-                 + FCPSalesStart + FCPSalesEnd
-                 + DEPPSalesStart + DEPPSalesEnd
-                 + agentRowEnd
-                 + agentRowStart
-                 + agentIDStart + agentIDEnd
-                 + agentNameStart + agentNameEnd
-                 + callsHandledStart + callsHandledEnd
-                 + salesCallsHandledStart + salesCallsHandledEnd
-                 + bounceSalesStart + bounceSalesEnd
-                 + closeRateStartGreen + closeRateEnd
-                 + FCPSalesStart + FCPSalesEnd
-                 + DEPPSalesStart + DEPPSalesEnd
-                 + agentRowEnd)
-mail.send
 
 print("\nDone.......\n")

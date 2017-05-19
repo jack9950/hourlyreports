@@ -9,29 +9,27 @@ tekTeam = [2062067, 2062035, 2062015, 2062040, 2062010, 2062024, 2062065,
            2062060, 2062007]
 antwonTeam = [2062039, 2062073, 2062074, 2062052, 2062058, 2062018, 2062049,
               2062076, 2062031, 2062044, 2062003, 2062089, 2062066]
+jacksonTeam = [2062087, 2062094, 2062095, 2062096, 2062098, 2062099]
 
 tableNames = [[2062026, 'BECERRA, DOLORES'],
+              [2062090, 'BOOTH, DEVONAE'],
               [2062062, 'BROWN, ADRIANE'],
               [2062053, 'COLBERT, BETTY'],
               [2062020, 'GABRIEL, TABITHA'],
+              [2062082, 'HAYMES, MONICA'],
               [2062048, 'HENRIQUES, PATRICK'],
+              [2062083, 'HOUSTON, KAMESHA'],
+              [2062084, 'JONES, BROOKE'],
               [2062011, 'JONES, GRACE'],
               [2062057, 'MURPHY, NATASCHA'],
               [2062054, 'ROBINSON, CARRIE'],
-              [2062090, 'BOOTH, DEVONAE'],
-              [2062082, 'HAYMES, MONICA'],
-              [2062083, 'HOUSTON, KAMESHA'],
-              [2062084, 'JONES, BROOKE'],
               [2062001, 'NICKERSON, JACQUELINE'],
               ['jaelesia', 'JAELESIA MOORE Total'],
               [2062067, 'CARTWRIGHT, GERISHA'],
-              [2062035, 'DAVIS, JESSICA'],
               [2062015, 'GREEN, REISHA'],
               [2062040, 'HARRIS, SHAMANDA'],
               [2062010, 'HERRERA, MAGDALY'],
               [2062024, 'MALONE, SHEMEKA'],
-              [2062065, 'PATTERSON, BRIA'],
-              [2062060, 'WATERS, TREYUNA'],
               [2062007, 'ERVIN, ANGELIQUE'],
               ['tek', 'TEK LEVON Total'],
               [2062039, 'CUELLAR, REYNA'],
@@ -43,16 +41,25 @@ tableNames = [[2062026, 'BECERRA, DOLORES'],
               [2062049, 'REDD, TAMERIA'],
               [2062076, 'RHODES, PEGGY'],
               [2062031, 'SLEDGE, DEBRA'],
+              [2062089, 'THORNE, ALICE'],
               [2062044, 'WILLIAMS, MARCUS'],
               [2062003, 'WILLIAMS, PAMELA'],
-              [2062089, 'THORNE, ALICE'],
               [2062066, 'MURPH, DOMINIQUE'],
               ['antwon', 'ANTWON COLLINS Total'],
+              [2062087,  'JOHN SAMPSON'],
+              [2062094, 'WESLEY JACKSON'],
+              [2062095, 'THORENT LEWIS'],
+              [2062096, 'LATARVEYA MCZEAL'],
+              [2062098, 'SHERMEKA SWAYZER'],
+              [2062099, 'TRISTAN SHAW'],
+              ['jackson', 'JACKSON NDIHO Total'],
               ['grandTotal', 'Grand Total']]
 
 
 def callsHandledReportLocation(*args):
-    if args[0]:  # if a date, "MTD" or "WTD" is passed, use that to construct the file names
+    if args[0]:
+        # if a date, "MTD" or "WTD" is passed,
+        # use that to construct the file names
         currentDate = args[0]
         if currentDate == "MTD":
             callsHandledReportLocation = homeFolder + currentDate + '\\Bounce_Engery_Agent_Performance_Rollup.xls'

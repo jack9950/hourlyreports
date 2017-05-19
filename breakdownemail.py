@@ -3,13 +3,11 @@ import time
 from datetime import datetime
 import itertools
 import win32com.client as win32
-import openpyxl
-from openpyxl.styles import Alignment
 from get_pogo_sales_breakdown import get_pogo_sales_breakdown
 from get_DEPP_sales_breakdown import get_DEPP_sales_breakdown
 from get_fcp_opportunities_breakdown import get_fcp_opportunities_breakdown
 from get_fcp_sales_breakdown import get_fcp_sales_breakdown
-from data_files import homeFolder, pogoSalesReportLocation
+from data_files import pogoSalesReportLocation
 from data_files import fcpReportLocation, DEPPreportLocation
 from breakdownTableFormat import emailStartHtml, emailEndHtml
 from breakdownTableFormat import rowOpenTag, rowCloseTag
@@ -37,22 +35,11 @@ try:
 except:
     reportDate = ''
 
-firstRow = 4  # first row to start adding agent sales is row 4
-left_alignment = Alignment(horizontal='left')
-
-# Open the template
-template = openpyxl.load_workbook(homeFolder + 'template_breakdown.xlsx')
-template_sheets = template.get_sheet_names()
-template_first_sheet = template.get_sheet_by_name(template_sheets[0])
-template_second_sheet = template.get_sheet_by_name(template_sheets[1])
-
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # Bounce and DEPP Sales
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-
-# template_first_sheet["A2"] = currentDate  # show the date at top of the sheet
 
 # The list format that will be returned by get_pogo_sales_breakdown is:
 #  [ [agent_name, [Acct #, Order #, order status],
@@ -70,28 +57,15 @@ DEPP_sales.sort()
 
 rowData = itertools.zip_longest(bounce_sales, DEPP_sales, fillvalue=[])
 
-# print("bounce_sales before zip: ")
-# for item in bounce_sales:
-#     print(item)
-#
-# print("\n\nDEPP_sales before zip: ")
-# for item in DEPP_sales:
-#     print(item)
-#
-# print("\n\nROW DATA ZIPPED: ")
-# for item in rowData:
-#     print(item, "\n")
-
 html = emailStartHtml + salesDEPPTableOpenTag
 
-row = firstRow  # first row to start adding agent sales is row 4
 for row in rowData:
     # format will be [bounce_sale, DEPP_sales]
     # an empty [] means that it is a partially blank row, and
     # one of the two, bounce_sales or DEPP_sales has more rows than the other
     # we will test for this unevenness by checking the length
     bounceSale = row[0]
-    # print("bounceSale: ", bounceSale)
+
     DEPPSale = row[1]
     if len(bounceSale) > 0:
         agentName1 = bounceSale[0]
@@ -198,12 +172,14 @@ try:
     int(arguments[0])
     reportDate = arguments[0]
     reportDate = reportDate[0:2] + '-' + reportDate[2:4] + '-' + reportDate[6:]
-    subject = 'DEPP, Sales and FCP Breakdown ' + reportDate + ' End of Business'
+    subject = ('DEPP, Sales and FCP Breakdown ' + reportDate
+               + ' End of Business')
     additionalEmailList = "; ".join(arguments[1:])
 
 except:
     reportDate = ''
-    subject = 'DEPP, Sales and FCP Breakdown ' + currentDate + ' ' + currentTime
+    subject = ('DEPP, Sales and FCP Breakdown ' + currentDate + ' '
+               + currentTime)
     additionalEmailList = "; ".join(arguments[0:])
 
 mail.To = additionalEmailList + '; jackson.ndiho@iqor.com'
@@ -211,4 +187,5 @@ mail.Subject = subject
 mail.HtmlBody = subject + ":" + html
 mail.send
 
-print("\nEmail sent to: " + additionalEmailList + "; jackson.ndiho@iqor.com.\n\nDone.......")
+print("\nDEPP, Sales and FCP Breakdown email sent to: " + additionalEmailList
+      + "; jackson.ndiho@iqor.com.\n\nDone.......")
