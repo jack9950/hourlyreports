@@ -57,6 +57,9 @@ DEPP_sales.sort()
 
 rowData = itertools.zip_longest(bounce_sales, DEPP_sales, fillvalue=[])
 
+# for row in rowData:
+#     print(row, "\n")
+
 html = emailStartHtml + salesDEPPTableOpenTag
 
 for row in rowData:
@@ -65,6 +68,8 @@ for row in rowData:
     # one of the two, bounce_sales or DEPP_sales has more rows than the other
     # we will test for this unevenness by checking the length
     bounceSale = row[0]
+
+    # print("bounceSale: ", bounceSale)
 
     DEPPSale = row[1]
     if len(bounceSale) > 0:

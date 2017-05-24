@@ -180,8 +180,8 @@ for id in DEPP_sales:
 # Sum up the DEPP sales for each supervisor and for the whole of iQor
 for agentID in DEPP_sales:
     if agentID in jaelesiaTeam:
-        jaelesiaDEPPsales += 1  
-        totalDEPPsales += 1      
+        jaelesiaDEPPsales += 1
+        totalDEPPsales += 1
     if agentID in tekTeam:
         tekDEPPsales += 1
         totalDEPPsales += 1
@@ -306,9 +306,14 @@ for agentRow in tableNames:
             salesCallsHandled = (str(int(jacksonSalesCallsHandled))
                                  if jacksonTotalCallsHandled else "")
             bounceSales = (str(jacksonTotalSales)
-                           if jacksonSalesCallsHandled >= 0 else "")
-            FCPSales = str(jacksonFCPsales) if jacksonSalesCallsHandled  >= 0 else ""
-            DEPPSales = str(jacksonDEPPsales) if jacksonTotalCallsHandled >= 0 else ""
+                           if (jacksonSalesCallsHandled >= 0
+                               and jacksonTotalSales > 0) else "")
+            FCPSales = (str(jacksonFCPsales)
+                        if (jacksonSalesCallsHandled >= 0
+                            and jacksonTotalSales > 0) else "")
+            DEPPSales = (str(jacksonDEPPsales)
+                         if (jacksonSalesCallsHandled >= 0
+                             and jacksonTotalSales > 0) else "")
 
         # Calculate Jaelesia's close rate and the colors for her cells
         if (agentID == 'jaelesia'):
