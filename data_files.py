@@ -47,11 +47,11 @@ tableNames = [[2062026, 'BECERRA, DOLORES'],
               [2062066, 'MURPH, DOMINIQUE'],
               ['antwon', 'ANTWON COLLINS Total'],
               [2062087,  'JOHN SAMPSON'],
-              [2062094, 'WESLEY JACKSON'],
-              [2062095, 'THORENT LEWIS'],
               [2062096, 'LATARVEYA MCZEAL'],
               [2062098, 'SHERMEKA SWAYZER'],
+              [2062095, 'THORENT LEWIS'],
               [2062099, 'TRISTAN SHAW'],
+              [2062094, 'WESLEY JACKSON'],
               ['jackson', 'JACKSON NDIHO Total'],
               ['grandTotal', 'Grand Total']]
 
