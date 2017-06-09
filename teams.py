@@ -5,7 +5,7 @@ jacksonTeam = [2062090, 2062081, 2062082, 2062083, 2062084, 2062085, 2062086, 20
 
 agent_ids_to_names = {2062026: "DOLORES BECERRA",
                       2062062: "ADRIANE BROWN",
-                      2062053: "BETTY COLBERT",
+                      2062053: "BETTY AGUILAR",
                       2062036: "KYLE CROCKETT",
                       2062020: "TABITHA GABRIEL",
                       2062048: "PATRICK HENRIQUES",
@@ -56,7 +56,7 @@ agent_ids_to_names = {2062026: "DOLORES BECERRA",
 
 agent_ids_to_names_reversed = {2062026: "BECERRA, DOLORES",
                       2062062: "BROWN, ADRIANE",
-                      2062053: "COLBERT, BETTY",
+                      2062053: "AGUILAR, BETTY",
                       2062036: "CROCKETT, KYLE",
                       2062020: "GABRIEL, TABITHA",
                       2062048: "HENRIQUES, PATRICK",
