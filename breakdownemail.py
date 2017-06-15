@@ -53,6 +53,14 @@ bounce_sales.sort()  # Sort alphabetically by agent name
 # [agent_name, pogo_account_number, pogo_order_number,
 #  DEPP_name, bounce_status]
 DEPP_sales = get_DEPP_sales_breakdown(DEPPreportLocation(reportDate))
+
+# remove any duplicates - there is probably a better way to do this!
+DUPs_removed = []
+for DEPP in DEPP_sales:
+    if DEPP not in DUPs_removed:
+          DUPs_removed.append(DEPP)
+DEPP_sales = DUPs_removed
+
 DEPP_sales.sort()
 
 rowData = itertools.zip_longest(bounce_sales, DEPP_sales, fillvalue=[])

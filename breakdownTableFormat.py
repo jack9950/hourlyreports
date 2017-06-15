@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# This is data for the salesemail.py script
+# This is data for the breakdownemail.py script
 # ------------------------------------------------------------------------------
 
 rowOpenTag = "<tr style='height:15.0pt'>"
@@ -14,7 +14,7 @@ acctNumCloseTag = "<o:p></o:p></span></p></td>"
 orderNumOpenTag = "<td width=75 nowrap valign=bottom style='width:56.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal><span style='color:black'>"
 orderNumCloseTag = "<o:p></o:p></span></p></td>"
 
-orderStatusOpenTag = "<td width=173 nowrap valign=bottom style='width:130.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal><span style='color:black'>"
+orderStatusOpenTag = "<td width=173 nowrap valign=bottom style='width:148.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal><span style='color:black'>"
 orderStatusCloseTag = "<o:p></o:p></span></p></td>"
 
 DEPPNameOpenTag = "<td width=231 nowrap valign=bottom style='width:173.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal><span style='color:black'>"

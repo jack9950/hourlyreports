@@ -6,8 +6,10 @@ import win32com.client as win32
 
 from get_calls_handled import get_calls_handled
 from get_pogo_sales import get_pogo_sales
-from get_DEPP_sales import get_DEPP_sales
+# from get_DEPP_sales import get_DEPP_sales
+from get_DEPP_sales1 import get_DEPP_sales
 from get_fcp_sales import get_fcp_sales
+from get_DEPP_sales_breakdown import get_DEPP_sales_breakdown
 from data_files import callsHandledReportLocation, pogoSalesReportLocation
 from data_files import fcpReportLocation, DEPPreportLocation
 from data_files import tableNames
@@ -168,7 +170,23 @@ for agentID in fcp_sales:
 # Gather up the DEPP sales from the Products report
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-DEPP_sales = get_DEPP_sales(DEPPreportLocation(reportDate))
+DEPP_sales_all = get_DEPP_sales(DEPPreportLocation(reportDate))
+# print(DEPP_sales)
+
+# remove any duplicates - there is probably a better way to do this!
+DUPs_removed = []
+for DEPP in DEPP_sales_all:
+    if DEPP not in DUPs_removed:
+          DUPs_removed.append(DEPP)
+
+DEPP_sales_all = DUPs_removed
+
+DEPP_sales = []
+
+for sale in DEPP_sales_all:
+    DEPP_sales.append(sale[0])
+
+print(DEPP_sales)
 
 for id in DEPP_sales:
     if (type(id) == str):
@@ -296,9 +314,14 @@ for agentRow in tableNames:
             salesCallsHandled = (str(int(antwonSalesCallsHandled))
                                  if antwonTotalCallsHandled else "")
             bounceSales = (str(antwonTotalSales)
-                           if antwonSalesCallsHandled >= 0 else "")
-            FCPSales = str(antwonFCPsales) if antwonSalesCallsHandled >= 0 else ""
-            DEPPSales = str(antwonDEPPsales) if antwonTotalCallsHandled >= 0 else ""
+                           if (antwonSalesCallsHandled >= 0
+                               and antwonTotalSales > 0) else "")
+            FCPSales = (str(antwonFCPsales)
+                        if (antwonSalesCallsHandled >= 0
+                            and antwonTotalSales > 0) else "")
+            DEPPSales = (str(antwonDEPPsales)
+                         if (antwonSalesCallsHandled >= 0
+                             and antwonTotalSales > 0) else "")
 
         elif (agentID == 'jackson'):
             callsHandled = (str(int(jacksonTotalCallsHandled))
