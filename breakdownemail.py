@@ -201,4 +201,5 @@ mail.HtmlBody = subject + ":" + html
 mail.send
 
 print("\nDEPP, Sales and FCP Breakdown email sent to: " + additionalEmailList
-      + "; jackson.ndiho@iqor.com.\n\nDone.......")
+      + "; jackson.ndiho@iqor.com \nat " + currentDate + " " + currentTime 
+      + "\n\nDone.......")

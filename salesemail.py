@@ -186,7 +186,7 @@ DEPP_sales = []
 for sale in DEPP_sales_all:
     DEPP_sales.append(sale[0])
 
-print(DEPP_sales)
+# print(DEPP_sales)
 
 for id in DEPP_sales:
     if (type(id) == str):
@@ -315,13 +315,13 @@ for agentRow in tableNames:
                                  if antwonTotalCallsHandled else "")
             bounceSales = (str(antwonTotalSales)
                            if (antwonSalesCallsHandled >= 0
-                               and antwonTotalSales > 0) else "")
+                               and antwonTotalSales >= 0) else "")
             FCPSales = (str(antwonFCPsales)
                         if (antwonSalesCallsHandled >= 0
-                            and antwonTotalSales > 0) else "")
+                            and antwonTotalSales >= 0) else "")
             DEPPSales = (str(antwonDEPPsales)
                          if (antwonSalesCallsHandled >= 0
-                             and antwonTotalSales > 0) else "")
+                             and antwonTotalSales >= 0) else "")
 
         elif (agentID == 'jackson'):
             callsHandled = (str(int(jacksonTotalCallsHandled))
@@ -330,13 +330,13 @@ for agentRow in tableNames:
                                  if jacksonTotalCallsHandled else "")
             bounceSales = (str(jacksonTotalSales)
                            if (jacksonSalesCallsHandled >= 0
-                               and jacksonTotalSales > 0) else "")
+                               and jacksonTotalSales >= 0) else "")
             FCPSales = (str(jacksonFCPsales)
                         if (jacksonSalesCallsHandled >= 0
-                            and jacksonTotalSales > 0) else "")
+                            and jacksonTotalSales >= 0) else "")
             DEPPSales = (str(jacksonDEPPsales)
                          if (jacksonSalesCallsHandled >= 0
-                             and jacksonTotalSales > 0) else "")
+                             and jacksonTotalSales >= 0) else "")
 
         # Calculate Jaelesia's close rate and the colors for her cells
         if (agentID == 'jaelesia'):
@@ -473,4 +473,5 @@ mail.HtmlBody = subject + ":" + html
 mail.send
 
 print("\niQor Sales email sent to: " + additionalEmailList
-      + "; jackson.ndiho@iqor.com.\n\nDone.......")
+      + "; jackson.ndiho@iqor.com \nat " + currentDate + " " + currentTime 
+      + "\n\nDone.......")
