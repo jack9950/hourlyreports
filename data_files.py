@@ -35,14 +35,12 @@ tableNames = [[2062062,'BROWN, ADRIANE'],
 [2062104,'GOUAUX, TAYLOR'],
 [2062100,'BENJAMIN, TRACEY'],
 ['tek','TEK LEVON Total'],
-[1234567,'REYNA, CUELLAR,'],
 [2062018,'MCMURRIN, ANDREADIS'],
 [2062110,'SUTTON, DANA'],
 [2062101,'BROWN, KEYUNNA'],
 [2062096,'MCZEAL, LATARVEYA'],
 [1234567,'COMBS, LATOYA'],
 [2062044,'WILLIAMS, MARCUS'],
-[2062109,'SMITH, MICHAEL'],
 [2062003,'WILLIAMS, PAMELA'],
 [2062074,'IGLESIAS, RAY'],
 [2062058,'LASTER, SHAWANDA'],
@@ -51,7 +49,8 @@ tableNames = [[2062062,'BROWN, ADRIANE'],
 ['antwon','ANTWON COLLINS Total'],
 [2062067,'CARTWRIGHT, GERISHA'],
 [2062001,'NICKERSON, JACQUELINE'],
-['jackson','JACKSON NDIHO Total']
+['jackson','JACKSON NDIHO Total'],
+['grandTotal', 'GRAND TOTAL']
 ]
 
               
@@ -160,7 +159,7 @@ def pogoSalesReportLocation(*args):
         else:
             currentHour = time.strftime('%H')
         pogoSalesReportLocation = homeFolder + 'bounce_energy_iqor_report_' + currentHour + '.xls'
-
+        print('pogoSalesReportLocation: ', pogoSalesReportLocation)
     return pogoSalesReportLocation
 
 

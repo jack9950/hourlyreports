@@ -173,7 +173,7 @@ for agentID in fcp_sales:
 DEPP_sales_all = get_DEPP_sales(DEPPreportLocation(reportDate))
 # print(DEPP_sales)
 
-# remove any duplicates - there is probably a better way to do this!
+# remove any duplicates - there's gotta be a better way to do this!
 DUPs_removed = []
 for DEPP in DEPP_sales_all:
     if DEPP not in DUPs_removed:
@@ -210,7 +210,7 @@ for agentID in DEPP_sales:
         jacksonDEPPsales += 1
         totalDEPPsales += 1
 
-
+# print("totalDEPPsales: ", totalDEPPsales)
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # Run through each entry in the tableNames and build the HTML string to be
@@ -266,20 +266,20 @@ for agentRow in tableNames:
                 closeRate = str(closeRate) + "%"
 
         # Get the agent DEPP Sales
-        if (callsHandled is not ""):
-            DEPPSales = str(DEPP_sales.count(agentID))
+        # if (callsHandled is not ""):
+        DEPPSales = str(DEPP_sales.count(agentID))
 
         # Add the HTML string for the agent row
         agentID = str(agentID)
         html += (agentRowStart
                  + agentIDStart + agentID + agentIDEnd
                  + agentNameStart + agentName + agentNameEnd
-                 + callsHandledStart + callsHandled + callsHandledEnd
-                 + salesCallsHandledStart + salesCallsHandled
-                 + salesCallsHandledEnd
-                 + bounceSalesStart + bounceSales + bounceSalesEnd
-                 + closeRateStart + closeRate + closeRateEnd
-                 + FCPSalesStart + FCPSales + FCPSalesEnd
+                 # + callsHandledStart + callsHandled + callsHandledEnd
+                 # + salesCallsHandledStart + salesCallsHandled
+                 # + salesCallsHandledEnd
+                 # + bounceSalesStart + bounceSales + bounceSalesEnd
+                 # + closeRateStart + closeRate + closeRateEnd
+                 # + FCPSalesStart + FCPSales + FCPSalesEnd
                  + DEPPSalesStart + DEPPSales + DEPPSalesEnd
                  + agentRowEnd)
 
@@ -402,12 +402,12 @@ for agentRow in tableNames:
         html += (supRowStart
                  + supIDStart + agentID + agentIDEnd
                  + supNameStart + agentName + agentNameEnd
-                 + supCallsHandledStart + callsHandled + callsHandledEnd
-                 + supSalesCallsHandledStart + salesCallsHandled
-                 + salesCallsHandledEnd
-                 + supBounceSalesStart + bounceSales + bounceSalesEnd
-                 + supCloseRateStart + closeRate + closeRateEnd
-                 + supFCPSalesStart + FCPSales + FCPSalesEnd
+                 # + supCallsHandledStart + callsHandled + callsHandledEnd
+                 # + supSalesCallsHandledStart + salesCallsHandled
+                 # + salesCallsHandledEnd
+                 # + supBounceSalesStart + bounceSales + bounceSalesEnd
+                 # + supCloseRateStart + closeRate + closeRateEnd
+                 # + supFCPSalesStart + FCPSales + FCPSalesEnd
                  + supDEPPSalesStart + DEPPSales + DEPPSalesEnd
                  + supRowEnd)
 
@@ -437,12 +437,12 @@ for agentRow in tableNames:
         html += (grandTotalRowStart
                  + gTotalIDStart + agentID + agentIDEnd
                  + gTotalNameStart + agentName + agentNameEnd
-                 + gTotalCallsHandledStart + callsHandled + callsHandledEnd
-                 + gTotalSalesCallsHandledStart + salesCallsHandled
-                 + salesCallsHandledEnd
-                 + gTotalBounceSalesStart + bounceSales + bounceSalesEnd
-                 + supCloseRateStart + closeRate + closeRateEnd
-                 + gTotalFCPSalesStart + FCPSales + FCPSalesEnd
+                 # + gTotalCallsHandledStart + callsHandled + callsHandledEnd
+                 # + gTotalSalesCallsHandledStart + salesCallsHandled
+                 # + salesCallsHandledEnd
+                 # + gTotalBounceSalesStart + bounceSales + bounceSalesEnd
+                 # + supCloseRateStart + closeRate + closeRateEnd
+                 # + gTotalFCPSalesStart + FCPSales + FCPSalesEnd
                  + gTotalDEPPSalesStart + DEPPSales + DEPPSalesEnd
                  + grandTotalRowEnd)
 
@@ -459,12 +459,12 @@ try:
     int(arguments[0])
     reportDate = arguments[0]
     reportDate = reportDate[0:2] + '-' + reportDate[2:4] + '-' + reportDate[6:]
-    subject = 'DEPP Sales Report ' + reportDate + ' End of Business'
+    subject = 'iQor DEPP Report ' + reportDate + ' End of Business'
     additionalEmailList = "; ".join(arguments[1:])
 
 except:
     reportDate = ''
-    subject = 'DEPP Sales Update ' + currentDate + ' ' + currentTime
+    subject = 'iQor DEPP Update ' + currentDate + ' ' + currentTime
     additionalEmailList = "; ".join(arguments[0:])
 
 mail.To = additionalEmailList + '; jackson.ndiho@iqor.com'
