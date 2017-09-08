@@ -1,43 +1,37 @@
 import sys
 import time
 from datetime import datetime
-
 import win32com.client as win32
 
-from get_calls_handled import get_calls_handled
-from get_pogo_sales import get_pogo_sales
-# from get_DEPP_sales import get_DEPP_sales
 from get_DEPP_sales1 import get_DEPP_sales
-from get_fcp_sales import get_fcp_sales
 from get_DEPP_sales_breakdown import get_DEPP_sales_breakdown
-from data_files import callsHandledReportLocation, pogoSalesReportLocation
-from data_files import fcpReportLocation, DEPPreportLocation
+
+from data_files import DEPPreportLocation
 from data_files import tableNames
 from data_files import jaelesiaTeam, tekTeam, antwonTeam, jacksonTeam
+
 from DEPPformat import topOfTable
 from DEPPformat import agentRowStart, agentRowEnd
 from DEPPformat import agentIDStart, agentIDEnd
 from DEPPformat import agentNameStart, agentNameEnd
-from DEPPformat import callsHandledStart, callsHandledEnd
-from DEPPformat import salesCallsHandledStart, salesCallsHandledEnd
-from DEPPformat import bounceSalesStart, bounceSalesEnd
-from DEPPformat import closeRateStartRed, closeRateStartYellow
-from DEPPformat import closeRateStartGreen, closeRateStartNoColor
-from DEPPformat import closeRateEnd, FCPSalesStart, FCPSalesEnd
 from DEPPformat import DEPPSalesStart, DEPPSalesEnd
+from DEPPformat import DEPPSalesStartGreen, DEPPSalesStartNoColor
 from DEPPformat import supRowStart, supRowEnd
 from DEPPformat import grandTotalRowStart, grandTotalRowEnd
-from DEPPformat import supIDStart, supNameStart, supCallsHandledStart
-from DEPPformat import supSalesCallsHandledStart
-from DEPPformat import supBounceSalesStart, supCloseRateStartRed
-from DEPPformat import supCloseRateStartYellow, supCloseRateStartGreen
-from DEPPformat import supCloseRateStartNoColor
-from DEPPformat import supFCPSalesStart, supDEPPSalesStart
-from DEPPformat import gTotalIDStart, gTotalNameStart, gTotalCallsHandledStart
-from DEPPformat import gTotalSalesCallsHandledStart
-from DEPPformat import gTotalBounceSalesStart, gTotalCloseRateStartRed
-from DEPPformat import gTotalCloseRateStartYellow, gTotalCloseRateStartGreen
-from DEPPformat import gTotalFCPSalesStart, gTotalDEPPSalesStart
+from DEPPformat import supIDStart, supNameStart
+from DEPPformat import supDEPPSalesStart
+from DEPPformat import gTotalIDStart, gTotalNameStart
+from DEPPformat import gTotalDEPPSalesStart
+
+from DEPPbreakdownTableFormat import emailStartHtml, emailEndHtml
+from DEPPbreakdownTableFormat import rowOpenTag, rowCloseTag
+from DEPPbreakdownTableFormat import salesDEPPTableOpenTag
+from DEPPbreakdownTableFormat import tableCloseTag
+from DEPPbreakdownTableFormat import agentNameOpenTag, agentNameCloseTag
+from DEPPbreakdownTableFormat import acctNumOpenTag, acctNumCloseTag
+from DEPPbreakdownTableFormat import orderNumOpenTag, orderNumCloseTag
+from DEPPbreakdownTableFormat import orderStatusOpenTag, orderStatusCloseTag
+from DEPPbreakdownTableFormat import DEPPNameOpenTag, DEPPNameCloseTag
 
 arguments = []
 
@@ -59,13 +53,6 @@ close_to_goal_bg = "FFEB9C"
 at_or_above_goal_text = "006100"
 at_or_above_goal_bg = "C6EFCE"
 
-(jaelesiaTotalCallsHandled, tekTotalCallsHandled, antwonTotalCallsHandled, jacksonTotalCallsHandled,
- totalCallsHandled) = 0, 0, 0, 0, 0
-(jaelesiaSalesCallsHandled, tekSalesCallsHandled, antwonSalesCallsHandled, jacksonSalesCallsHandled,
- totalSalesCallsHandled) = 0, 0, 0, 0, 0
-(jaelesiaTotalSales, tekTotalSales, antwonTotalSales, jacksonTotalSales,
- totalSales) = 0, 0, 0, 0, 0
-(jaelesiaFCPsales, tekFCPsales, antwonFCPsales, jacksonFCPsales, totalFCPSales) = 0, 0, 0, 0, 0
 (jaelesiaDEPPsales, tekDEPPsales, antwonDEPPsales, jacksonDEPPsales,
  totalDEPPsales) = 0, 0, 0, 0, 0
 
@@ -73,96 +60,6 @@ supervisorIDs = {"aervin": 2062007, "jnickerson": 2062001, "tlevon": 2062007,
                  "jacksonn": 2062047, "jabram": 2062017,
                  "iqr_acollins": 2062072, "jmoore": 206223, "mayala": 2062002}
 
-html = topOfTable
-
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# Get the calls handled for each agent
-# The format returned is a 2 dimensional array with each agent and their calls
-# represented as:
-# [agent ID, Calls Handled, Sales Calls Handled] in the return array
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-calls_handled = get_calls_handled(callsHandledReportLocation(reportDate))
-
-# Sum up the calls handled for each supervisor and for the whole of iQor
-for item in calls_handled:
-    agentID = item[0]
-    if agentID in jaelesiaTeam:
-        jaelesiaTotalCallsHandled += item[1]
-        jaelesiaSalesCallsHandled += item[2]
-        totalCallsHandled += item[1]
-        totalSalesCallsHandled += item[2]
-    if agentID in tekTeam:
-        tekTotalCallsHandled += item[1]
-        tekSalesCallsHandled += item[2]
-        totalCallsHandled += item[1]
-        totalSalesCallsHandled += item[2]
-    if agentID in antwonTeam:
-        antwonTotalCallsHandled += item[1]
-        antwonSalesCallsHandled += item[2]
-        totalCallsHandled += item[1]
-        totalSalesCallsHandled += item[2]
-    if agentID in jacksonTeam:
-        jacksonTotalCallsHandled += item[1]
-        jacksonSalesCallsHandled += item[2]
-        totalCallsHandled += item[1]
-        totalSalesCallsHandled += item[2]
-
-
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# Gather up all the orders from the big bounce sales report
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-pogo_sales = get_pogo_sales(pogoSalesReportLocation(reportDate))
-
-# Team leads also submit POGO orders with text POGO ID rather than numeric ID
-# Replace the team lead text POGO agent IDs with the numeric AVAYA IDs
-for id in pogo_sales:
-    if (type(id) == str):
-        try:
-            pogo_sales[pogo_sales.index(id)] = supervisorIDs[id]
-        except:
-            pass
-
-# Sum up the POGO sales for each supervisor and for the whole of iQor
-for agentID in pogo_sales:
-    if agentID in jaelesiaTeam:
-        jaelesiaTotalSales += 1
-        totalSales += 1
-    if agentID in tekTeam:
-        tekTotalSales += 1
-        totalSales += 1
-    if agentID in antwonTeam:
-        antwonTotalSales += 1
-        totalSales += 1
-    if agentID in jacksonTeam:
-        jacksonTotalSales += 1
-        totalSales += 1
-
-
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# Gather up the FCP sales from the FCP report
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-fcp_sales = get_fcp_sales(fcpReportLocation(reportDate), reportDate)
-
-# Sum up the fcp sales for each supervisor and for the whole of iQor
-for agentID in fcp_sales:
-    if agentID in jaelesiaTeam:
-        jaelesiaFCPsales += 1
-        totalFCPSales += 1
-    if agentID in tekTeam:
-        tekFCPsales += 1
-        totalFCPSales += 1
-    if agentID in antwonTeam:
-        antwonFCPsales += 1
-        totalFCPSales += 1
-    if agentID in jacksonTeam:
-        jacksonFCPsales += 1
-        totalFCPSales += 1
 
 
 # ------------------------------------------------------------------------------
@@ -171,7 +68,6 @@ for agentID in fcp_sales:
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 DEPP_sales_all = get_DEPP_sales(DEPPreportLocation(reportDate))
-# print(DEPP_sales)
 
 # remove any duplicates - there's gotta be a better way to do this!
 DUPs_removed = []
@@ -185,8 +81,6 @@ DEPP_sales = []
 
 for sale in DEPP_sales_all:
     DEPP_sales.append(sale[0])
-
-# print(DEPP_sales)
 
 for id in DEPP_sales:
     if (type(id) == str):
@@ -210,63 +104,30 @@ for agentID in DEPP_sales:
         jacksonDEPPsales += 1
         totalDEPPsales += 1
 
-# print("totalDEPPsales: ", totalDEPPsales)
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # Run through each entry in the tableNames and build the HTML string to be
 # attached to the body of the email
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
+html = topOfTable
+
 for agentRow in tableNames:
     agentID = agentRow[0]
     agentName = agentRow[1]
-    callsHandled = ""
-    salesCallsHandled = ""
-    bounceSales = ""
-    closeRate = ""
-    FCPSales = ""
     DEPPSales = ""
-    closeRateStart = closeRateStartNoColor
-    supCloseRateStart = supCloseRateStartNoColor
+    DEPPSalesStart = DEPPSalesStartNoColor
 
     # This is executed if it is an agent and not a supervisor
-    if (type(agentID) == int):  # only agent have numeric IDs
-
-        # Get the agent calls handled and sales calls handled
-        for item in calls_handled:  # check each nested list
-            if (agentID == item[0]):
-                callsHandledInteger = item[1]
-                salesCallsHandledInteger = item[2]
-                if callsHandledInteger > 0:
-                    callsHandled = str(int(item[1]))
-                    salesCallsHandled = str(int(item[2]))
-
-        # Get the agent Bounce Sales
-        if (callsHandled is not ""):
-            bounceSales = str(pogo_sales.count(agentID))
-            bounceSalesInteger = pogo_sales.count(agentID)
-
-        # Get the agent FCP Sales
-        if (callsHandled is not ""):
-            FCPSales = str(fcp_sales.count(agentID))
-            FCPSalesInteger = fcp_sales.count(agentID)
-
-        # Get the agent Close Rate
-        if (salesCallsHandled is not ""):
-            if (int(salesCallsHandled) > 0):
-                closeRate = ((bounceSalesInteger + FCPSalesInteger) /
-                             salesCallsHandledInteger * 100.00)
-                closeRate = int(round(closeRate, 0))
-                if closeRate > 49:
-                    closeRateStart = closeRateStartGreen
-                elif closeRate > 39:
-                    closeRateStart = closeRateStartYellow
-                else:
-                    closeRateStart = closeRateStartRed
-                closeRate = str(closeRate) + "%"
+    if (type(agentID) == int):  # only agents have numeric IDs
 
         # Get the agent DEPP Sales
-        # if (callsHandled is not ""):
+        DEPPSales = DEPP_sales.count(agentID)
+
+        # if (DEPPSales > 0):
+        #     print(agentName, "printing green")
+        #     DEPPSalesStart = DEPPSalesStartGreen
+
         DEPPSales = str(DEPP_sales.count(agentID))
 
         # Add the HTML string for the agent row
@@ -274,12 +135,6 @@ for agentRow in tableNames:
         html += (agentRowStart
                  + agentIDStart + agentID + agentIDEnd
                  + agentNameStart + agentName + agentNameEnd
-                 # + callsHandledStart + callsHandled + callsHandledEnd
-                 # + salesCallsHandledStart + salesCallsHandled
-                 # + salesCallsHandledEnd
-                 # + bounceSalesStart + bounceSales + bounceSalesEnd
-                 # + closeRateStart + closeRate + closeRateEnd
-                 # + FCPSalesStart + FCPSales + FCPSalesEnd
                  + DEPPSalesStart + DEPPSales + DEPPSalesEnd
                  + agentRowEnd)
 
@@ -287,164 +142,88 @@ for agentRow in tableNames:
     if (agentID == 'jaelesia' or agentID == 'tek' or
             agentID == 'antwon' or agentID == 'jackson'):
 
-        if (agentID == 'jaelesia'):
-            callsHandled = str(int(jaelesiaTotalCallsHandled)
-                               ) if jaelesiaTotalCallsHandled else ""
-            salesCallsHandled = str(int(jaelesiaSalesCallsHandled)
-                                    ) if jaelesiaTotalCallsHandled else ""
-            bounceSales = (str(jaelesiaTotalSales)
-                           if jaelesiaSalesCallsHandled >= 0 else "")
-            FCPSales = (str(jaelesiaFCPsales)
-                        if jaelesiaSalesCallsHandled >= 0 else "")
-            DEPPSales = (str(jaelesiaDEPPsales)
-                         if jaelesiaTotalCallsHandled >= 0 else "")
+        if (agentID == 'jaelesia'):            
+            DEPPSales = str(jaelesiaDEPPsales)
+
 
         elif (agentID == 'tek'):
-            callsHandled = (str(int(tekTotalCallsHandled))
-                            if tekTotalCallsHandled else "")
-            salesCallsHandled = (str(int(tekSalesCallsHandled))
-                                 if tekTotalCallsHandled else "")
-            bounceSales = str(tekTotalSales) if tekSalesCallsHandled >= 0 else ""
-            FCPSales = str(tekFCPsales) if tekSalesCallsHandled >= 0 else ""
-            DEPPSales = str(tekDEPPsales) if tekTotalCallsHandled >= 0 else ""
+            DEPPSales = str(tekDEPPsales) 
 
         elif (agentID == 'antwon'):
-            callsHandled = (str(int(antwonTotalCallsHandled))
-                            if antwonTotalCallsHandled else "")
-            salesCallsHandled = (str(int(antwonSalesCallsHandled))
-                                 if antwonTotalCallsHandled else "")
-            bounceSales = (str(antwonTotalSales)
-                           if (antwonSalesCallsHandled >= 0
-                               and antwonTotalSales >= 0) else "")
-            FCPSales = (str(antwonFCPsales)
-                        if (antwonSalesCallsHandled >= 0
-                            and antwonTotalSales >= 0) else "")
-            DEPPSales = (str(antwonDEPPsales)
-                         if (antwonSalesCallsHandled >= 0
-                             and antwonTotalSales >= 0) else "")
+            DEPPSales = str(antwonDEPPsales)
 
         elif (agentID == 'jackson'):
-            callsHandled = (str(int(jacksonTotalCallsHandled))
-                            if jacksonTotalCallsHandled else "")
-            salesCallsHandled = (str(int(jacksonSalesCallsHandled))
-                                 if jacksonTotalCallsHandled else "")
-            bounceSales = (str(jacksonTotalSales)
-                           if (jacksonSalesCallsHandled >= 0
-                               and jacksonTotalSales >= 0) else "")
-            FCPSales = (str(jacksonFCPsales)
-                        if (jacksonSalesCallsHandled >= 0
-                            and jacksonTotalSales >= 0) else "")
-            DEPPSales = (str(jacksonDEPPsales)
-                         if (jacksonSalesCallsHandled >= 0
-                             and jacksonTotalSales >= 0) else "")
-
-        # Calculate Jaelesia's close rate and the colors for her cells
-        if (agentID == 'jaelesia'):
-            if (jaelesiaSalesCallsHandled is not ""):
-                if (int(jaelesiaSalesCallsHandled) > 0):
-                    closeRate = ((jaelesiaTotalSales + jaelesiaFCPsales) /
-                                 jaelesiaSalesCallsHandled * 100.00)
-                    closeRate = int(round(closeRate, 0))
-                    if closeRate >= 50:
-                        supCloseRateStart = supCloseRateStartGreen
-                    elif closeRate >= 40:
-                        supCloseRateStart = supCloseRateStartYellow
-                    else:
-                        supCloseRateStart = supCloseRateStartRed
-                    closeRate = str(closeRate) + "%"
-
-        # Calculate Tek's close rate and the colors for his cells
-        if (agentID == 'tek'):
-            if (tekSalesCallsHandled is not ""):
-                if (int(tekSalesCallsHandled) > 0):
-                    closeRate = ((tekTotalSales + tekFCPsales) /
-                                 tekSalesCallsHandled * 100.00)
-                    closeRate = int(round(closeRate, 0))
-                    if closeRate >= 50:
-                        supCloseRateStart = supCloseRateStartGreen
-                    elif closeRate >= 40:
-                        supCloseRateStart = supCloseRateStartYellow
-                    else:
-                        supCloseRateStart = supCloseRateStartRed
-                    closeRate = str(closeRate) + "%"
-
-        # Calculate Antwon's close rate and the colors for his cells
-        if (agentID == 'antwon'):
-            if (antwonSalesCallsHandled is not ""):
-                if (int(antwonSalesCallsHandled) > 0):
-                    closeRate = ((antwonTotalSales + antwonFCPsales) /
-                                 antwonSalesCallsHandled * 100.00)
-                    closeRate = int(round(closeRate, 0))
-                    if closeRate >= 50:
-                        supCloseRateStart = supCloseRateStartGreen
-                    elif closeRate >= 40:
-                        supCloseRateStart = supCloseRateStartYellow
-                    else:
-                        supCloseRateStart = supCloseRateStartRed
-                    closeRate = str(closeRate) + "%"
-
-        if (agentID == 'jackson'):
-            if (jacksonSalesCallsHandled is not ""):
-                if (int(jacksonSalesCallsHandled) > 0):
-                    closeRate = ((jacksonTotalSales + jacksonFCPsales) /
-                                 jacksonSalesCallsHandled * 100.00)
-                    closeRate = int(round(closeRate, 0))
-                    if closeRate >= 50:
-                        supCloseRateStart = supCloseRateStartGreen
-                    elif closeRate >= 40:
-                        supCloseRateStart = supCloseRateStartYellow
-                    else:
-                        supCloseRateStart = supCloseRateStartRed
-                    closeRate = str(closeRate) + "%"
+            DEPPSales = str(jacksonDEPPsales)
 
         # Add the HTMl string for the supervisor
         agentID = "&nbsp;"
         html += (supRowStart
                  + supIDStart + agentID + agentIDEnd
                  + supNameStart + agentName + agentNameEnd
-                 # + supCallsHandledStart + callsHandled + callsHandledEnd
-                 # + supSalesCallsHandledStart + salesCallsHandled
-                 # + salesCallsHandledEnd
-                 # + supBounceSalesStart + bounceSales + bounceSalesEnd
-                 # + supCloseRateStart + closeRate + closeRateEnd
-                 # + supFCPSalesStart + FCPSales + FCPSalesEnd
                  + supDEPPSalesStart + DEPPSales + DEPPSalesEnd
                  + supRowEnd)
 
     # This is executed if it is grand Total
     if agentID == 'grandTotal':
-        callsHandled = str(int(totalCallsHandled))
-        salesCallsHandled = str(int(totalSalesCallsHandled))
-        bounceSales = str(totalSales)
-        FCPSales = str(totalFCPSales)
         DEPPSales = str(totalDEPPsales)
-
-        if (totalSalesCallsHandled is not ""):
-            if (int(totalSalesCallsHandled) > 0):
-                closeRate = ((totalSales + totalFCPSales) /
-                             totalSalesCallsHandled * 100.00)
-                closeRate = int(round(closeRate, 0))
-                if closeRate >= 50:
-                    supCloseRateStart = gTotalCloseRateStartGreen
-                elif closeRate >= 40:
-                    supCloseRateStart = gTotalCloseRateStartYellow
-                else:
-                    supCloseRateStart = gTotalCloseRateStartRed
-                closeRate = str(closeRate) + "%"
 
         # Add the HTML string for the Grand Total
         agentID = "&nbsp;"
         html += (grandTotalRowStart
                  + gTotalIDStart + agentID + agentIDEnd
                  + gTotalNameStart + agentName + agentNameEnd
-                 # + gTotalCallsHandledStart + callsHandled + callsHandledEnd
-                 # + gTotalSalesCallsHandledStart + salesCallsHandled
-                 # + salesCallsHandledEnd
-                 # + gTotalBounceSalesStart + bounceSales + bounceSalesEnd
-                 # + supCloseRateStart + closeRate + closeRateEnd
-                 # + gTotalFCPSalesStart + FCPSales + FCPSalesEnd
                  + gTotalDEPPSalesStart + DEPPSales + DEPPSalesEnd
-                 + grandTotalRowEnd)
+                 + grandTotalRowEnd + "</table> <br> <br>")
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# DEPP Sales Breakdown
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
+# The list format that will be returned by get_DEPP_sales_breakdown is:
+# [agent_name, pogo_account_number, pogo_order_number,
+#  DEPP_name, bounce_status]
+DEPP_sales = get_DEPP_sales_breakdown(DEPPreportLocation(reportDate))
+
+# remove any duplicates - there is probably a better way to do this!
+DUPs_removed = []
+for DEPP in DEPP_sales:
+    if DEPP not in DUPs_removed:
+          DUPs_removed.append(DEPP)
+DEPP_sales = DUPs_removed
+
+DEPP_sales.sort()
+
+html += salesDEPPTableOpenTag
+
+for DEPP in DEPP_sales:
+    # format will be [bounce_sale, DEPP_sales]
+    # an empty [] means that it is a partially blank row, and
+    # one of the two, bounce_sales or DEPP_sales has more rows than the other
+    # we will test for this unevenness by checking the length
+    # bounceSale = row[0]
+    # DEPPSale = row[1]
+    
+    # if len(row) > 0:
+    agentName2 = DEPP[0]
+    accountNumber2 = str(int(DEPP[1]))
+    orderNumber2 = str(int(DEPP[2]))
+    DEPPName = DEPP[3]
+    orderStatus2 = DEPP[4]
+
+    html += (rowOpenTag
+             + agentNameOpenTag + agentName2 + agentNameCloseTag
+             + acctNumOpenTag + accountNumber2 + acctNumCloseTag
+             + orderNumOpenTag + orderNumber2 + orderNumCloseTag
+             + DEPPNameOpenTag + DEPPName + DEPPNameCloseTag
+             + orderStatusOpenTag + orderStatus2 + orderStatusCloseTag
+             + rowCloseTag)
+
+html += tableCloseTag + emailEndHtml
+
+
+
 
 # ------------------------------------------------------------------------------
 # send email

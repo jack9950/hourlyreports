@@ -21,15 +21,20 @@ salesCallsHandledStart = "<td width=80 nowrap valign=bottom style='width:60.3pt;
 salesCallsHandledEnd = "<o:p></o:p></span></p></td>"
 bounceSalesStart = "<td width=73 nowrap valign=bottom style='width:55.05pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal align=center style='text-align:center'><span style='color:black'>"
 bounceSalesEnd = "<o:p></o:p></span></p></td>"
-closeRateStartNoColor = "<td width=57 nowrap valign=bottom style='width:43.05pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>"
 closeRateStartRed = "<td width=57 nowrap valign=bottom style='width:43.05pt;background:#FFC7CE;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal align=center style='text-align:center'><b><span style='color:#9C0006'>"
 closeRateStartYellow = "<td width=57 nowrap valign=bottom style='width:43.05pt;background:#FFEB9C;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal align=center style='text-align:center'><b><span style='color:#9C6500'>"
 closeRateStartGreen = "<td width=57 nowrap valign=bottom style='width:43.05pt;background:#C6EFCE;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal align=center style='text-align:center'><b><span style='color:#006100'>"
 closeRateEnd = "<o:p></o:p></span></b></p></td>"
 FCPSalesStart = "<td width=55 nowrap valign=bottom style='width:41.55pt;border:none;border-left:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal align=center style='text-align:center'><span style='color:black'>"
 FCPSalesEnd = "<o:p></o:p></span></p></td>"
+closeRateStartNoColor = "<td width=57 nowrap valign=bottom style='width:43.05pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>"
+DEPPSalesStartNoColor = "<td width=55 nowrap valign=bottom style='width:41.55pt; border:none; border-right:solid windowtext 1.0pt; padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal align=center style='text-align:center'><span style='color:black'>"
+# DEPPSalesStartNoColor = "<td width=55 nowrap valign=bottom style='width:41.55pt; border:none; border-right:solid windowtext 1.0pt; padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal align=center style='text-align:center'><span style='color:black'>"
 DEPPSalesStart = "<td width=55 nowrap valign=bottom style='width:41.55pt;border:none;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal align=center style='text-align:center'><span style='color:black'>"
-DEPPSalesEnd = "<o:p></o:p></span></p></td>"
+closeRateStartGreen = "<td width=57 nowrap valign=bottom style='width:43.05pt;background:#C6EFCE;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal align=center style='text-align:center'><b><span style='color:#006100'>"
+DEPPSalesStartGreen = "<td width=55 nowrap valign=bottom style='width:41.55pt;background:#C6EFCE;border:none;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal align=center style='text-align:center'><b><span style='color:#006100'>"
+# DEPPSalesStartGreen = "<td width=57 nowrap valign=bottom style='width:43.05pt;background:#C6EFCE;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal align=center style='text-align:center'><b><span style='color:#006100'>"
+DEPPSalesEnd = "<o:p></o:p></b></span></p></td>"
 
 supRowStart = "<tr style = 'height:.25in'>"
 supRowEnd = "</tr>"
@@ -111,7 +116,7 @@ topOfTable = """
 	<body lang=EN-US link="#0563C1" vlink="#954F72">
 		<br>
 		<div class=WordSection1>
-            <table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=656 style='width:492.35pt;border-collapse:collapse'>
+            <table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=0 style='width:364.1pt;border-collapse:collapse'>
 				<tr style='height:54.75pt'>
 					<td width=63 valign=bottom style='width:47.55pt;border:solid windowtext 1.0pt;border-right:none;background:#9BC2E6;padding:0in 5.4pt 0in 5.4pt;height:54.75pt'><p class=MsoNormal><b><span style='font-size:14.0pt;color:black'>Agent ID<o:p></o:p></span></b></p></td>
 					<td width=191 valign=bottom style='width:143.0pt;border:solid windowtext 1.0pt;border-left:none;background:#9BC2E6;padding:0in 5.4pt 0in 5.4pt;height:54.75pt'><p class=MsoNormal><b><span style='font-size:14.0pt;color:black'>Agent Name<o:p></o:p></span></b></p></td>
