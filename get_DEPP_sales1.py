@@ -2,7 +2,8 @@ import sys
 import xlrd
 from openpyxl.workbook import Workbook
 from openpyxl.reader.excel import load_workbook, InvalidFileException
-from teams import agent_ids_to_names
+# from teams import agent_ids_to_names
+from data_files import agent_ids_to_names
 
 #Sample return:
 # [agent_id, [Acct #, Order #, order status], [Acct #, Order #, order status]]

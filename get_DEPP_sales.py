@@ -33,5 +33,6 @@ def get_DEPP_sales(filename):
             #The format is [agent ID, Product Name, Bounce Status]
             values.append(agent_id)
             # print (sheet.cell_value(row,17), sheet.cell_value(row,6), sheet.cell_value(row,11))
-
+            for value in values:
+                print(value)
     return values

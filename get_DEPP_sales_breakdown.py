@@ -2,7 +2,7 @@ import sys
 import xlrd
 from openpyxl.workbook import Workbook
 from openpyxl.reader.excel import load_workbook, InvalidFileException
-from teams import agent_ids_to_names
+from data_files import agent_ids_to_names
 
 #Sample return:
 # [agent_id, [Acct #, Order #, order status], [Acct #, Order #, order status]]
@@ -38,7 +38,9 @@ def get_DEPP_sales_breakdown(filename):
                 pogo_order_number = sheet.cell_value(row,1)
                 DEPP_name = sheet.cell_value(row,5)
                 bounce_status = sheet.cell_value(row,10)
-
+                print("Inside get_DEPP_sales_breakdown:")
+                print(agent_name, pogo_account_number, pogo_order_number,
+                               DEPP_name, bounce_status)
                 values.append([agent_name,
                                pogo_account_number,
                                pogo_order_number,
