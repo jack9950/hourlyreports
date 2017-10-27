@@ -10,7 +10,6 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 
 from get_DEPP_sales2 import get_DEPP_sales, get_DEPP_sales_breakdown
-from get_missing_DEPPs import get_missing_DEPPs, get_missing_DEPPs_breakdown
 
 from data_files import homeFolder
 from data_files import DEPPreportLocation
@@ -40,52 +39,41 @@ from DEPPbreakdownTableFormat import orderNumOpenTag, orderNumCloseTag
 from DEPPbreakdownTableFormat import orderStatusOpenTag, orderStatusCloseTag
 from DEPPbreakdownTableFormat import DEPPNameOpenTag, DEPPNameCloseTag
 
-def show_exception_and_exit(exc_type, exc_value, tb):
-    traceback.print_exception(exc_type, exc_value, tb)
-    # raw_input("Press key to exit.")
-    sys.exit(-1)
-
-sys.excepthook = show_exception_and_exit
-
-
 arguments = []
-# wait = input("PRESS ENTER TO CONTINUE.")
 for arg in sys.argv:
     arguments.append(arg)
 arguments = arguments[1:]
-# wait = input("PRESS ENTER TO CONTINUE2.")
+
 try:
     int(arguments[0])
     reportDate = arguments[0]
 except:
     reportDate = ''
-# wait = input("PRESS ENTER TO CONTINUE3.")
-# currentDate = datetime.now().strftime("%m-%d-%y")
+
 currentDate = datetime.now().strftime("%m-%d-%y")
 currentTime = time.strftime("%#I:%M %p")
 fileNameDate = datetime.now().strftime("%m%d%y")
 fileNameTime = time.strftime("%#I%M%p")
-# wait = input("PRESS ENTER TO CONTINUE4.")
+
 #********************************************************************************
 #This will open the Bounce Energy Sonar page, log into the site and download the NOPR data
 #********************************************************************************
 
-# #Auto download the Excel file to the current working directory
+#Auto download the Excel file to the current working directory
 profile = webdriver.ChromeOptions()
 prefs = {"download.default_directory" : homeFolder}
 profile.add_experimental_option("prefs",prefs)
-# # wait = input("PRESS ENTER TO CONTINUE5.")
-# #Open Bounce Sonar page
 
+#Open Bounce Sonar page
 try:
   browser = webdriver.Chrome(chrome_options=profile)
 except Exception as ex:
   traceback.print_exception()
 
-# #Open Bounce Sonar page
+#Open Bounce Sonar page
 browser.get('https://apps.bounceenergy.com/sonar/')
-# # wait = input("PRESS ENTER TO CONTINUE7.")
-# #Find the username and password elements and log-in to Sonar
+
+#Find the username and password elements and log-in to Sonar
 try:
   usernameElem = browser.find_element_by_id('UserUsername')
   usernameElem.send_keys('jndiho')
@@ -108,8 +96,8 @@ time.sleep(5)
 #Find the csv checkbox and click it
 browser.find_element_by_xpath(".//input[@type='checkbox' and @name='report[report_type]']").click()
 #Find the "Today" radio button and click it
-browser.find_element_by_xpath(".//input[@type='radio' and @value='today']").click()
-
+# browser.find_element_by_xpath(".//input[@type='radio' and @value='today']").click()
+browser.find_element_by_xpath(".//input[@type='radio' and @value='this_month']").click()
 
 try:
   #Find the "Generate Report" submit button and click it
@@ -117,10 +105,10 @@ try:
   time.sleep(10)
 finally:
   i = 0
-  while (not os.path.isfile(homeFolder + 'report.csv') and i < 30):
+  while (not os.path.isfile(homeFolder + 'report.csv') and i < 120):
     i+=1
     print('i = ', i)
-    time.sleep(2)
+    time.sleep(1)
   print("File downloaded to ", 'C:\\Users\\Jackson.Ndiho\\Documents\\Sales\\')
   # browser.close()
 
@@ -160,26 +148,15 @@ with open(DEPPFileName) as DEPPFile:
   DEPPReader = csv.reader(DEPPFile)
   DEPPData = list(DEPPReader)
   DEPPData = DEPPData[1:]
-  # print("We made it..************************")
+  print("We made it..************************")
 
-# DEPPfilePath = homeFolder + 'report.csv'
 DEPPfilePath = homeFolder + 'report.csv'
-missingDEPPfilePath = homeFolder + 'missing_DEPPs.csv'
 
-DEPP_sales = get_DEPP_sales(DEPPfilePath)
-# DEPP_sales_all = get_DEPP_sales(missingDEPPfilePath)
-missing_DEPPs = get_missing_DEPPs(missingDEPPfilePath)
+DEPP_sales_all = get_DEPP_sales(DEPPfilePath)
 
-DEPP_sales_all = [*DEPP_sales, *missing_DEPPs]
-# print('DEPP_sales_all:')
-# for elem in DEPP_sales_all:
-#   print(elem) 
-
-# print('Missing DEPPs:', '\n', missing_DEPPs)
-
-# print("DEPP_sales_all first one: ")
-# for test in DEPP_sales_all:
-#     print(test)
+print("DEPP_sales_all first one: ")
+for test in DEPP_sales_all:
+    print(test)
 print("*************************************************************************")
 print("*************************************************************************")
 print("*************************************************************************")
@@ -191,29 +168,10 @@ for DEPP in DEPP_sales_all:
           DUPs_removed.append(DEPP)
 
 DEPP_sales_all = DUPs_removed
-# for DEPP in DEPP_sales_all:
-#   print(DEPP)
 
-
-
-# DEPPStringmap = map(str(DEPP_sales_all))
-
-# with open(editsFileLocation, mode='w', encoding='utf-8') as a_file:
-#     for DEPP in DEPP_sales_all:
-#       DEPP = map(str, DEPP)
-#       DEPP = ' '.join(DEPP) + '\n'
-#       a_file.write(DEPP)
-
-# with open(editsFileLocation, encoding='utf-8') as a_file:
-#   for line in a_file:
-#     toAdd = line.split()
-#     # print(toAdd)
-#     if toAdd in DEPP_sales_all:
-#       DEPP_sales_all.append(toAdd)
-
-# print("DEPP_sales_all 2nd one: ")
-# for test in DEPP_sales_all:
-#     print(test)
+print("DEPP_sales_all 2nd one: ")
+for test in DEPP_sales_all:
+    print(test)
 print("*************************************************************************")
 print("*************************************************************************")
 print("*************************************************************************")
@@ -223,7 +181,7 @@ DEPP_sales = []
 for sale in DEPP_sales_all:
     DEPP_sales.append(sale[0])
 
-# print(DEPP_sales_all)
+print(DEPP_sales)
 
 for id in DEPP_sales:
     if (type(id) == str):
@@ -327,29 +285,22 @@ for agentRow in tableNames:
 # The list format that will be returned by get_DEPP_sales_breakdown is:
 # [agent_name, pogo_account_number, pogo_order_number,
 #  DEPP_name, bounce_status]
-DEPPfilePath = homeFolder + 'report.csv'
-missingDEPPfilePath = homeFolder + 'missing_DEPPs.csv'
+DEPP_sales = get_DEPP_sales_breakdown(DEPPFileName)
 
-DEPP_sales = get_DEPP_sales_breakdown(DEPPfilePath)
-missing_DEPPs = get_missing_DEPPs_breakdown(missingDEPPfilePath)
-
-DEPP_sales_all = [*DEPP_sales, *missing_DEPPs]
-
-# print('DEPP_sales_all: ', DEPP_sales_all)
 # remove any duplicates - there is probably a better way to do this!
 DUPs_removed = []
-for DEPP in DEPP_sales_all:
+for DEPP in DEPP_sales:
     if DEPP not in DUPs_removed:
           DUPs_removed.append(DEPP)
-DEPP_sales_all = DUPs_removed
+DEPP_sales = DUPs_removed
 
-DEPP_sales_all.sort()
+DEPP_sales.sort()
 
 # for print('DEPPSales', DEPPSales)
 
 html += salesDEPPTableOpenTag
 
-for DEPP in DEPP_sales_all:
+for DEPP in DEPP_sales:
     # format will be [bounce_sale, DEPP_sales]
     # an empty [] means that it is a partially blank row, and
     # one of the two, bounce_sales or DEPP_sales has more rows than the other
@@ -364,7 +315,7 @@ for DEPP in DEPP_sales_all:
     DEPPName = DEPP[3]
     orderStatus2 = DEPP[4]
 
-    # print(agentName2, accountNumber2, orderNumber2, DEPPName, orderStatus2)
+    print(agentName2, accountNumber2, orderNumber2, DEPPName, orderStatus2)
 
     html += (rowOpenTag
              + agentNameOpenTag + agentName2 + agentNameCloseTag
@@ -383,24 +334,22 @@ outlook = win32.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
 
 try:
-    int(arguments[0])
-    reportDate = arguments[0]
-    reportDate = reportDate[0:2] + '-' + reportDate[2:4] + '-' + reportDate[6:]
-    subject = 'iQor DEPP Report ' + reportDate + ' End of Business'
-    additionalEmailList = "; ".join(arguments[1:])
-
+  subject = 'iQor DEPP MTD as of ' + currentDate + ' ' + currentTime
+  # print("Arguments[0] is: ", arguments[0])
+  additionalEmailList = "; ".join(arguments[0:])
+  mail.To = additionalEmailList + '; jackson.ndiho@iqor.com'
+  mail.Subject = subject
+  mail.HtmlBody = subject + ":" + html
+  mail.send
 except:
-    reportDate = ''
-    subject = 'iQor DEPP Update ' + currentDate + ' ' + currentTime
-    additionalEmailList = "; ".join(arguments[0:])
-
-mail.To = additionalEmailList + '; jackson.ndiho@iqor.com'
-mail.Subject = subject
-mail.HtmlBody = subject + ":" + html
-mail.send
+  subject = 'iQor DEPP MTD as of ' + currentDate + ' ' + currentTime
+  mail.To = 'jackson.ndiho@iqor.com'
+  mail.Subject = subject
+  mail.HtmlBody = subject + ":" + html
+  mail.send
 
 currentName = homeFolder + 'report.csv'
-newName = homeFolder + 'report_' + fileNameDate + '_' + fileNameTime +'.csv'
+newName = homeFolder + 'report_MTD_' + fileNameDate + '_' + fileNameTime +'.csv'
 shutil.move(currentName, newName)
 
 print("\nDEPP Sales email sent to: " + additionalEmailList

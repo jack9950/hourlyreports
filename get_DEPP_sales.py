@@ -36,3 +36,4 @@ def get_DEPP_sales(filename):
             for value in values:
                 print(value)
     return values
+
