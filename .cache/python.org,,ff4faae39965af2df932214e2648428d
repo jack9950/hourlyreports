@@ -1,0 +1,7 @@
+status: 301
+location: https://python.org/
+connection: Keep-Alive
+content-length: 0
+-x-permanent-redirect-url: https://python.org/
+content-location: http://python.org
+
