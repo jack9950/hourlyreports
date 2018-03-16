@@ -32,6 +32,8 @@ def get_DEPP_sales(filename):
                                  DEPP_name == "Cooling Maintenance Essentials (6 Month Free Trial - Nest Bundle)" or
                                  DEPP_name == "Cooling Repair & Maintenance Essentials" or
                                  DEPP_name == "Electric Repair Essentials (20% Off)") or
+                                 DEPP_name == "Electric Repair Essentials & Surge Protection Plan 10.99 " or
+                                 DEPP_name == "Electric Repair Essentials 8.99" or
                                  DEPP_name == "Heating & Cooling Repair Essentials"):
             try:
                 agent_name = agent_ids_to_names[int(agent_id)]
@@ -69,6 +71,8 @@ def get_DEPP_sales_breakdown(filename):
                                  DEPP_name == "Cooling Maintenance Essentials (6 Month Free Trial - Nest Bundle)" or
                                  DEPP_name == "Cooling Repair & Maintenance Essentials" or
                                  DEPP_name == "Electric Repair Essentials (20% Off)") or
+                                 DEPP_name == "Electric Repair Essentials & Surge Protection Plan 10.99 " or
+                                 DEPP_name == "Electric Repair Essentials 8.99" or
                                  DEPP_name == "Heating & Cooling Repair Essentials"):
             try:
                 agent_name = agent_ids_to_names[int(agent_id)]

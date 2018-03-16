@@ -30,17 +30,19 @@ def get_DEPP_sales_breakdown(filename):
                                  DEPP_name == "Surge Protection Plan (20% Off)" or
                                  DEPP_name == "Cooling Maintenance Essentials (6 Month Free Trial - Nest Bundle)" or
                                  DEPP_name == "Cooling Repair & Maintenance Essentials" or
-                                 DEPP_name == "Electric Repair Essentials (20% Off)") or
-                                 DEPP_name == "Heating & Cooling Repair Essentials"):
+                                 DEPP_name == "Electric Repair Essentials (20% Off)" or
+                                 DEPP_name == "Heating & Cooling Repair Essentials" or
+                                 DEPP_name == "Electric Repair Essentials & Surge Protection Plan 10.99" or
+                                 DEPP_name == "Electric Repair Essentials 8.99")):
             try:
                 agent_name = agent_ids_to_names[agent_id]
                 pogo_account_number = sheet.cell_value(row,0)
                 pogo_order_number = sheet.cell_value(row,1)
                 DEPP_name = sheet.cell_value(row,5)
                 bounce_status = sheet.cell_value(row,10)
-                print("Inside get_DEPP_sales_breakdown:")
-                print(agent_name, pogo_account_number, pogo_order_number,
-                               DEPP_name, bounce_status)
+                # print("Inside get_DEPP_sales_breakdown:")
+                # print(agent_name, pogo_account_number, pogo_order_number,
+                               # DEPP_name, bounce_status)
                 values.append([agent_name,
                                pogo_account_number,
                                pogo_order_number,

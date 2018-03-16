@@ -5,7 +5,7 @@
 rowOpenTag = "<tr style='height:15.0pt'>"
 rowCloseTag = "</tr>"
 
-agentNameOpenTag = "<td width=167 nowrap valign=bottom style='width:20.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal><span style='color:black'>"
+agentNameOpenTag = "<td width=167 nowrap valign=bottom style='width:40.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal><span style='color:black'>"
 agentNameCloseTag = "<o:p></o:p></span></p></td>"
 
 acctNumOpenTag = "<td width=75 nowrap valign=bottom style='width:56.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal><span style='color:black'>"
@@ -17,7 +17,7 @@ orderNumCloseTag = "<o:p></o:p></span></p></td>"
 orderStatusOpenTag = "<td width=173 nowrap valign=bottom style='width:148.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal><span style='color:black'>"
 orderStatusCloseTag = "<o:p></o:p></span></p></td>"
 
-DEPPNameOpenTag = "<td width=231 nowrap valign=bottom style='width:173.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal><span style='color:black'>"
+DEPPNameOpenTag = "<td width=231 nowrap valign=bottom style='width:260.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal><span style='color:black'>"
 DEPPNameCloseTag = "<o:p></o:p></span></p></td>"
 
 fcpAgentNameOpenTag = "<td width=167 nowrap valign=bottom style='width:125.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'><p class=MsoNormal><span style='color:black'>"
@@ -89,7 +89,7 @@ emailStartHtml = """
 """
 
 salesDEPPTableOpenTag = """
-      <table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=721 style='width:600.0pt;border-collapse:collapse'>
+      <table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=721 style='width:700.0pt;border-collapse:collapse'>
         <tr style='height:33.75pt'>   
           <td width=721 colspan=5 valign=bottom style='width:600.0pt;padding:0in 5.4pt 0in  5.4pt;height:33.75pt'><p class=MsoNormal align=center style='text-align:center'><b><span style='font-size:26.0pt;font-family:"Arial",sans-serif;color:black'>DEPP Breakdown:<o:p></o:p></span></b></p></td>
         </tr>

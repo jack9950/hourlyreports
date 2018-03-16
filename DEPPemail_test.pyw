@@ -10,7 +10,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 
 from get_DEPP_sales2 import get_DEPP_sales, get_DEPP_sales_breakdown
-from get_missing_DEPPs import get_missing_DEPPs, get_missing_DEPPs_breakdown
+from getMissingDEPPs import get_missing_DEPPs, get_missing_DEPPs_breakdown
 
 from data_files import homeFolder
 from data_files import DEPPreportLocation
@@ -40,14 +40,6 @@ from DEPPbreakdownTableFormat import orderNumOpenTag, orderNumCloseTag
 from DEPPbreakdownTableFormat import orderStatusOpenTag, orderStatusCloseTag
 from DEPPbreakdownTableFormat import DEPPNameOpenTag, DEPPNameCloseTag
 
-def show_exception_and_exit(exc_type, exc_value, tb):
-    traceback.print_exception(exc_type, exc_value, tb)
-    # raw_input("Press key to exit.")
-    sys.exit(-1)
-
-sys.excepthook = show_exception_and_exit
-
-
 arguments = []
 # wait = input("PRESS ENTER TO CONTINUE.")
 for arg in sys.argv:
@@ -66,31 +58,31 @@ currentTime = time.strftime("%#I:%M %p")
 fileNameDate = datetime.now().strftime("%m%d%y")
 fileNameTime = time.strftime("%#I%M%p")
 # wait = input("PRESS ENTER TO CONTINUE4.")
+
 #********************************************************************************
 #This will open the Bounce Energy Sonar page, log into the site and download the NOPR data
 #********************************************************************************
-
 # #Auto download the Excel file to the current working directory
 profile = webdriver.ChromeOptions()
 prefs = {"download.default_directory" : homeFolder}
 profile.add_experimental_option("prefs",prefs)
-# # wait = input("PRESS ENTER TO CONTINUE5.")
-# #Open Bounce Sonar page
+# wait = input("PRESS ENTER TO CONTINUE5.")
 
 try:
   browser = webdriver.Chrome(chrome_options=profile)
 except Exception as ex:
   traceback.print_exception()
 
-# #Open Bounce Sonar page
+#Open Bounce Sonar page
 browser.get('https://apps.bounceenergy.com/sonar/')
-# # wait = input("PRESS ENTER TO CONTINUE7.")
-# #Find the username and password elements and log-in to Sonar
+# wait = input("PRESS ENTER TO CONTINUE7.")
+
+#Find the username and password elements and log-in to Sonar
 try:
   usernameElem = browser.find_element_by_id('UserUsername')
   usernameElem.send_keys('jndiho')
   passwordElem = browser.find_element_by_name('login_pass')
-  passwordElem.send_keys('WPxL2ht8NB')
+  passwordElem.send_keys('NyamoYa89*(')
   passwordElem.submit()
 except: 
   print('Login to Sonar Failed!')
@@ -104,17 +96,16 @@ time.sleep(5)
 select_report_type.select_by_value('242')
 time.sleep(5)
 
-#browser.find_element_by_xpath("//input[@name='username']").click()
 #Find the csv checkbox and click it
 browser.find_element_by_xpath(".//input[@type='checkbox' and @name='report[report_type]']").click()
 #Find the "Today" radio button and click it
 browser.find_element_by_xpath(".//input[@type='radio' and @value='today']").click()
 
-
 try:
   #Find the "Generate Report" submit button and click it
   browser.find_element_by_xpath(".//input[@type='submit' and @value='Generate Report']").click()
   time.sleep(10)
+# wait until the sonar DEPPs file has been downloaded successfully
 finally:
   i = 0
   while (not os.path.isfile(homeFolder + 'report.csv') and i < 30):
@@ -129,6 +120,7 @@ if (os.path.isfile(homeFolder + 'report.csv') != True):
   sys.exit()
 
 browser.quit()
+
 #*******************************************************************************
 #Process the DEPP File and send email
 #*******************************************************************************
@@ -147,83 +139,38 @@ supervisorIDs = {"aervin": 2062007, "jnickerson": 2062001, "tlevon": 2062007,
                  "jacksonn": 2062047, "jabram": 2062017,
                  "iqr_acollins": 2062072, "jmoore": 206223, "mayala": 2062002}
 
-
-
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # Gather up the DEPP sales from the Products report
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 DEPPFileName = homeFolder + 'report.csv'
-# DEPPFile = open(DEPPFileName)
+
 with open(DEPPFileName) as DEPPFile:
   DEPPReader = csv.reader(DEPPFile)
   DEPPData = list(DEPPReader)
   DEPPData = DEPPData[1:]
-  # print("We made it..************************")
 
-# DEPPfilePath = homeFolder + 'report.csv'
 DEPPfilePath = homeFolder + 'report.csv'
 missingDEPPfilePath = homeFolder + 'missing_DEPPs.csv'
 
 DEPP_sales = get_DEPP_sales(DEPPfilePath)
-# DEPP_sales_all = get_DEPP_sales(missingDEPPfilePath)
 missing_DEPPs = get_missing_DEPPs(missingDEPPfilePath)
 
 DEPP_sales_all = [*DEPP_sales, *missing_DEPPs]
-# print('DEPP_sales_all:')
-# for elem in DEPP_sales_all:
-#   print(elem) 
 
-# print('Missing DEPPs:', '\n', missing_DEPPs)
-
-# print("DEPP_sales_all first one: ")
-# for test in DEPP_sales_all:
-#     print(test)
-print("*************************************************************************")
-print("*************************************************************************")
-print("*************************************************************************")
 # remove any duplicates - there's gotta be a better way to do this!
-
 DUPs_removed = []
 for DEPP in DEPP_sales_all:
     if DEPP not in DUPs_removed:
           DUPs_removed.append(DEPP)
 
 DEPP_sales_all = DUPs_removed
-# for DEPP in DEPP_sales_all:
-#   print(DEPP)
-
-
-
-# DEPPStringmap = map(str(DEPP_sales_all))
-
-# with open(editsFileLocation, mode='w', encoding='utf-8') as a_file:
-#     for DEPP in DEPP_sales_all:
-#       DEPP = map(str, DEPP)
-#       DEPP = ' '.join(DEPP) + '\n'
-#       a_file.write(DEPP)
-
-# with open(editsFileLocation, encoding='utf-8') as a_file:
-#   for line in a_file:
-#     toAdd = line.split()
-#     # print(toAdd)
-#     if toAdd in DEPP_sales_all:
-#       DEPP_sales_all.append(toAdd)
-
-# print("DEPP_sales_all 2nd one: ")
-# for test in DEPP_sales_all:
-#     print(test)
-print("*************************************************************************")
-print("*************************************************************************")
-print("*************************************************************************")
 
 DEPP_sales = []
 
 for sale in DEPP_sales_all:
     DEPP_sales.append(sale[0])
-
-# print(DEPP_sales_all)
 
 for id in DEPP_sales:
     if (type(id) == str):
@@ -266,11 +213,6 @@ for agentRow in tableNames:
 
         # Get the agent DEPP Sales
         DEPPSales = DEPP_sales.count(agentID)
-
-        # if (DEPPSales > 0):
-        #     print(agentName, "printing green")
-        #     DEPPSalesStart = DEPPSalesStartGreen
-
         DEPPSales = str(DEPP_sales.count(agentID))
 
         # Add the HTML string for the agent row
@@ -335,7 +277,6 @@ missing_DEPPs = get_missing_DEPPs_breakdown(missingDEPPfilePath)
 
 DEPP_sales_all = [*DEPP_sales, *missing_DEPPs]
 
-# print('DEPP_sales_all: ', DEPP_sales_all)
 # remove any duplicates - there is probably a better way to do this!
 DUPs_removed = []
 for DEPP in DEPP_sales_all:
@@ -344,8 +285,6 @@ for DEPP in DEPP_sales_all:
 DEPP_sales_all = DUPs_removed
 
 DEPP_sales_all.sort()
-
-# for print('DEPPSales', DEPPSales)
 
 html += salesDEPPTableOpenTag
 
@@ -363,8 +302,6 @@ for DEPP in DEPP_sales_all:
     orderNumber2 = str(int(DEPP[2]))
     DEPPName = DEPP[3]
     orderStatus2 = DEPP[4]
-
-    # print(agentName2, accountNumber2, orderNumber2, DEPPName, orderStatus2)
 
     html += (rowOpenTag
              + agentNameOpenTag + agentName2 + agentNameCloseTag
